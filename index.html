@@ -1,0 +1,3583 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#050811" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="BOLÃO BR" />
+<title>BOLÃO BR · Copa 2026 🇧🇷</title>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="icon" type="image/svg+xml" href="icon.svg" />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=Bungee&display=swap" rel="stylesheet" />
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['Anton', 'Impact', 'sans-serif'],
+        body: ['Manrope', 'system-ui', 'sans-serif'],
+        chant: ['Bungee', 'Impact', 'sans-serif'],
+      },
+      colors: {
+        ink:    '#050811',
+        carbon: '#0c1322',
+        steel:  '#161f33',
+        bone:   '#e9ecf2',
+        muted:  '#7a8499',
+        lime:   '#caff33',
+        neon:   '#00ffa3',
+        gold:   '#ffd60a',
+        cherry: '#ff2d87',
+        cyan:   '#00e5ff',
+      },
+      boxShadow: {
+        glow:   '0 0 24px rgba(0,255,163,.35), 0 0 60px rgba(0,255,163,.15)',
+        gold:   '0 0 24px rgba(255,214,10,.45), 0 0 70px rgba(255,214,10,.18)',
+        cherry: '0 0 24px rgba(255,45,135,.45), 0 0 70px rgba(255,45,135,.2)',
+      },
+      animation: {
+        'pulse-glow': 'pulseGlow 2.2s ease-in-out infinite',
+        'shake':      'shake 0.5s ease-in-out',
+        'float':      'float 6s ease-in-out infinite',
+        'shimmer':    'shimmer 2.5s linear infinite',
+        'pop':        'pop 0.45s cubic-bezier(.34,1.56,.64,1)',
+        'slide-up':   'slideUp 0.4s cubic-bezier(.22,1,.36,1)',
+        'fade':       'fade 0.3s ease-out',
+        'spin-slow':  'spin 8s linear infinite',
+      },
+      keyframes: {
+        pulseGlow: { '0%,100%': { opacity: 1 }, '50%': { opacity: .55 } },
+        shake: { '0%,100%': { transform: 'translateX(0)' }, '25%': { transform: 'translateX(-4px)' }, '75%': { transform: 'translateX(4px)' } },
+        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-10px)' } },
+        shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
+        pop: { '0%': { transform: 'scale(0.85)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } },
+        slideUp: { '0%': { transform: 'translateY(20px)', opacity: 0 }, '100%': { transform: 'translateY(0)', opacity: 1 } },
+        fade: { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
+      },
+    }
+  }
+}
+</script>
+
+<style>
+  :root{
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html, body { background:#050811; color:#e9ecf2; }
+  body{
+    font-family:'Manrope', system-ui, sans-serif;
+    overscroll-behavior-y: contain;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Bg ambience */
+  .bg-stadium{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(0,255,163,.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(255,214,10,.06), transparent 60%),
+      radial-gradient(700px 400px at 100% 90%, rgba(255,45,135,.07), transparent 60%),
+      #050811;
+  }
+  .grain::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.05;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  /* Scrollbar hide */
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+  .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+
+  /* Neon dot */
+  .live-dot{
+    width:8px; height:8px; border-radius:50%; background:#ff2d87;
+    box-shadow:0 0 0 0 rgba(255,45,135,.7);
+    animation: pulseDot 1.5s infinite;
+  }
+  @keyframes pulseDot{
+    0%{ box-shadow:0 0 0 0 rgba(255,45,135,.7); }
+    70%{ box-shadow:0 0 0 10px rgba(255,45,135,0); }
+    100%{ box-shadow:0 0 0 0 rgba(255,45,135,0); }
+  }
+
+  /* Shimmer ribbon (placeholders / golden text) */
+  .shimmer-text{
+    background: linear-gradient(90deg, #ffd60a 0%, #fff8c2 35%, #ffd60a 60%, #b08900 80%, #ffd60a 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* Bottom nav blur */
+  .nav-blur{
+    background: rgba(8,11,22,.78);
+    backdrop-filter: saturate(180%) blur(18px);
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+  }
+
+  /* Match card hover-able */
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 18px;
+  }
+  .card-elev{
+    background:
+      radial-gradient(240px 80px at 20% 0%, rgba(0,255,163,.08), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:20px;
+  }
+  .chip{
+    border:1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    border-radius: 999px;
+  }
+
+  /* Buttons */
+  .btn-primary{
+    background: linear-gradient(180deg, #00ffa3 0%, #00c982 100%);
+    color:#04140c; font-weight:800;
+    box-shadow: 0 8px 24px rgba(0,255,163,.25), inset 0 1px 0 rgba(255,255,255,.45);
+  }
+  .btn-primary:active{ transform: translateY(1px) scale(.99); }
+  .btn-ghost{
+    border:1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* Modal */
+  .modal-back{
+    background: rgba(2,4,9,.7);
+    backdrop-filter: blur(8px);
+  }
+  .sheet{
+    background: linear-gradient(180deg, #0d1322 0%, #070b16 100%);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* Flag emoji big */
+  .flag{ font-size: 36px; line-height: 1; }
+
+  /* Toast */
+  .toast{
+    background: linear-gradient(180deg, #161f33, #0c1322);
+    border:1px solid rgba(0,255,163,.4);
+    box-shadow: 0 12px 40px rgba(0,255,163,.2);
+  }
+
+  /* Splash */
+  #splash{
+    position:fixed; inset:0; z-index:200;
+    background: radial-gradient(800px 600px at 50% 30%, #1a2747, #050811 70%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transition: opacity .5s ease, visibility .5s ease;
+  }
+  #splash.hide{ opacity:0; visibility:hidden; }
+  .splash-ring{
+    width:120px; height:120px; border-radius:50%;
+    border:3px solid rgba(255,255,255,.1);
+    border-top-color:#00ffa3; border-right-color:#ffd60a;
+    animation: spin 1.2s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Confetti */
+  .confetti{
+    position:fixed; inset:0; pointer-events:none; z-index:150; overflow:hidden;
+  }
+  .confetti span{
+    position:absolute; top:-10vh; width:8px; height:14px;
+    animation: fall linear forwards;
+    opacity:.9;
+  }
+  @keyframes fall{
+    to{ transform: translateY(120vh) rotate(720deg); opacity:0; }
+  }
+
+  /* Story card aspect */
+  .story{
+    aspect-ratio: 9/16;
+    border-radius: 24px;
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* Skeleton */
+  .sk{
+    background: linear-gradient(90deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.09) 50%, rgba(255,255,255,.04) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+
+  /* selection */
+  ::selection{ background: #00ffa3; color:#04140c; }
+
+  /* Range input */
+  input[type=range]{
+    -webkit-appearance:none; appearance:none; background:transparent;
+  }
+  input[type=range]::-webkit-slider-runnable-track{
+    height:6px; background: rgba(255,255,255,.1); border-radius:6px;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; margin-top:-7px;
+    width:20px; height:20px; border-radius:50%; background:#00ffa3;
+    box-shadow:0 0 12px rgba(0,255,163,.6);
+  }
+
+  /* Tab indicator */
+  .tab-active .tab-ico{
+    color:#00ffa3; text-shadow:0 0 12px rgba(0,255,163,.6);
+  }
+  .tab-active .tab-label{ color:#00ffa3; }
+
+  /* Notif dot */
+  .notif-dot{
+    position:absolute; top:-2px; right:-2px;
+    width:8px; height:8px; border-radius:50%;
+    background:#ff2d87; box-shadow:0 0 8px #ff2d87;
+  }
+
+  /* App container — phone frame on desktop */
+  @media (min-width: 640px){
+    body{ background:#020308; }
+    #app-frame{
+      max-width: 430px;
+      margin: 24px auto;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 36px;
+      overflow: hidden;
+      box-shadow: 0 30px 90px rgba(0,0,0,.6), 0 0 0 8px rgba(255,255,255,.02);
+      min-height: calc(100vh - 48px);
+    }
+  }
+
+  /* Holographic border */
+  .holo{
+    position:relative;
+  }
+  .holo::before{
+    content:""; position:absolute; inset:-1px; border-radius:inherit; padding:1px;
+    background: conic-gradient(from 180deg, #00ffa3, #00e5ff, #ff2d87, #ffd60a, #00ffa3);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: spin 8s linear infinite;
+    opacity:.7;
+    pointer-events:none;
+  }
+
+  /* Hide details from screen at idle */
+  [data-screen]{ display:none; }
+  [data-screen].active{ display:block; animation: fade .35s ease-out; }
+
+  /* Trophy gleam */
+  .trophy-bg{
+    background:
+      radial-gradient(400px 200px at 50% 0%, rgba(255,214,10,.25), transparent 70%),
+      linear-gradient(180deg, #1a1a2e 0%, #0c0c1a 100%);
+  }
+
+  /* ===== TABELA NOSTÁLGICA (papel kraft/jornal antigo) ===== */
+  .paper{
+    background:
+      /* manchas e textura */
+      radial-gradient(800px 400px at 80% -20%, rgba(120,80,30,.18), transparent 70%),
+      radial-gradient(600px 300px at -10% 110%, rgba(180,140,80,.12), transparent 70%),
+      /* base creme/papel envelhecido */
+      linear-gradient(180deg, #f4e9cf 0%, #ecddb8 100%);
+    color: #2a1c0a;
+    border-radius: 18px;
+    position: relative;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.4) inset,
+      0 -2px 12px rgba(120,80,30,.15) inset,
+      0 12px 30px rgba(0,0,0,.45);
+    overflow: hidden;
+  }
+  .paper::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.35'/></svg>");
+    opacity:.4; mix-blend-mode: multiply;
+  }
+  .paper::after{
+    /* dobra/grain horizontal */
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background: repeating-linear-gradient(180deg, transparent 0 18px, rgba(80,40,10,.025) 18px 19px);
+  }
+  .paper > * { position:relative; z-index:1; }
+
+  /* Tipografia jornal */
+  .news-h{ font-family:'Anton', Impact, sans-serif; letter-spacing:.04em; color:#1a0e02; }
+  .news-stamp{
+    display:inline-block; padding:2px 10px; border:2px solid #b8341d; color:#b8341d;
+    font-family:'Bungee',Impact,sans-serif; letter-spacing:.15em;
+    transform: rotate(-3deg); border-radius:4px;
+    background: rgba(255,255,255,.3);
+  }
+
+  /* Tabela classificação estilo planilha impressa */
+  .tbl-class{
+    width:100%; border-collapse:collapse; font-size:11px;
+    font-family: ui-monospace, "SF Mono", monospace;
+  }
+  .tbl-class th{
+    background: #1a0e02; color:#f4e9cf;
+    padding: 6px 4px; text-align:center; font-weight:700;
+    letter-spacing:.08em; font-size:10px;
+  }
+  .tbl-class th:nth-child(2){ text-align:left; padding-left:10px; }
+  .tbl-class td{
+    padding: 5px 4px; text-align:center;
+    border-bottom: 1px dashed rgba(80,40,10,.3);
+  }
+  .tbl-class td:nth-child(2){ text-align:left; padding-left:10px; font-weight:600; }
+  .tbl-class tr:last-child td{ border-bottom:none; }
+  .tbl-class .q1{ background: rgba(0,160,80,.18); }   /* 1º — verde forte */
+  .tbl-class .q2{ background: rgba(0,160,80,.10); }   /* 2º — verde claro */
+  .tbl-class .q3{ background: rgba(255,180,0,.14); }  /* 3º — amarelo (pode classificar) */
+  .tbl-class .qF{ background: rgba(180,40,20,.08); }  /* 4º — eliminado */
+
+  /* Jogos do grupo (estilo escrever placar à caneta) */
+  .game-row{
+    display:grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items:center;
+    gap:6px;
+    padding:6px 4px;
+    border-bottom: 1px dotted rgba(80,40,10,.35);
+    font-size:12px;
+  }
+  .game-row:last-child{ border-bottom:none; }
+  .game-row .home-name{ text-align:right; }
+  .game-row .away-name{ text-align:left; }
+  .game-row .home-name, .game-row .away-name{
+    font-family: ui-monospace, monospace;
+    font-weight:600;
+    color:#2a1c0a;
+    line-height:1.1;
+  }
+  .game-row .when{
+    font-size:9px; color: #6b4a1c;
+    letter-spacing:.05em;
+  }
+  .score-input{
+    width: 28px; height: 28px;
+    text-align:center;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #b8341d;
+    color:#1a0e02;
+    font-family:'Bungee', Impact, sans-serif;
+    font-size: 16px;
+    padding: 0;
+    border-radius: 0;
+  }
+  .score-input:focus{
+    outline:none; background: rgba(184,52,29,.08);
+    border-bottom-color:#1a0e02;
+  }
+  .score-input::-webkit-outer-spin-button,
+  .score-input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .score-input[type=number]{ -moz-appearance:textfield; }
+
+  .vs-dot{ color:#6b4a1c; font-weight:700; font-size:14px; padding:0 2px; }
+
+  /* "Carimbo" de classificação */
+  .stamp-qual{
+    position:absolute; top:50%; right:-8px; transform: translateY(-50%) rotate(-12deg);
+    padding:2px 8px; border:2px solid #0a7a3e; color:#0a7a3e;
+    font-family:'Bungee',Impact,sans-serif; font-size:9px; letter-spacing:.1em;
+    border-radius:3px; background: rgba(255,255,255,.3);
+    opacity:.85;
+  }
+
+  /* CHAVE DO MATA-MATA — estilo nostálgico */
+  .bracket{
+    background:
+      radial-gradient(600px 300px at 50% 0%, rgba(120,80,30,.15), transparent 60%),
+      linear-gradient(180deg, #ecddb8 0%, #d9c590 100%);
+    color:#2a1c0a;
+    border-radius:18px;
+    padding:14px 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position:relative;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.4) inset,
+      0 12px 30px rgba(0,0,0,.45);
+  }
+  .bracket::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.35'/></svg>");
+    opacity:.35; mix-blend-mode: multiply; border-radius:18px;
+  }
+  .bracket-inner{
+    position:relative; z-index:1;
+    display:flex; gap:8px; min-width: 760px;
+    padding: 0 4px;
+  }
+  .bk-col{
+    display:flex; flex-direction:column; justify-content: space-around;
+    flex: 1 1 0; min-width: 120px;
+  }
+  .bk-col-title{
+    text-align:center; font-family:'Anton',Impact,sans-serif;
+    font-size:11px; letter-spacing:.15em; color:#1a0e02;
+    border-bottom: 2px solid #1a0e02; padding-bottom:4px; margin-bottom:8px;
+  }
+  .bk-match{
+    background: rgba(255,255,255,.45);
+    border: 1.5px solid #1a0e02;
+    border-radius: 6px;
+    padding: 5px 6px;
+    margin: 4px 0;
+    font-size: 10px;
+    font-family: ui-monospace, monospace;
+    line-height: 1.4;
+    box-shadow: 1px 1px 0 rgba(0,0,0,.15);
+  }
+  .bk-match .bk-team{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:4px; padding: 1px 0;
+  }
+  .bk-match .bk-team.winner{
+    font-weight:800; color: #0a7a3e;
+  }
+  .bk-match .bk-team.loser{
+    text-decoration: line-through;
+    color: #888; opacity:.6;
+  }
+  .bk-match .bk-team .bk-name{ truncate; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bk-match .bk-team .bk-flag{ font-size:11px; }
+  .bk-final{
+    background: linear-gradient(180deg, #ffd60a 0%, #f0a500 100%);
+    border: 2px solid #1a0e02;
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+  .bk-champ-trophy{
+    text-align:center; font-family:'Bungee', sans-serif;
+    color:#1a0e02; font-size:13px; padding: 6px 0;
+  }
+
+  /* Group accordion in tabela screen */
+  details.group-box{ }
+  details.group-box > summary{ list-style:none; cursor:pointer; }
+  details.group-box > summary::-webkit-details-marker{ display:none; }
+  details.group-box[open] .chev{ transform: rotate(90deg); }
+  .chev{ transition: transform .25s; display:inline-block; }
+</style>
+
+<!-- Firebase config (carrega ANTES do app pra estar disponível desde o início) -->
+<script src="firebase-config.js"></script>
+
+</head>
+<body class="bg-stadium grain min-h-screen">
+
+<!-- ===== SPLASH SCREEN ===== -->
+<div id="splash">
+  <div class="splash-ring mb-6"></div>
+  <div class="font-display tracking-wider text-5xl">
+    <span class="text-neon">BOLÃO</span> <span class="text-gold">BR</span>
+  </div>
+  <div class="text-muted text-sm mt-2 tracking-widest">COPA 2026 · CARREGANDO...</div>
+</div>
+
+<!-- ===== APP FRAME ===== -->
+<div id="app-frame" class="relative min-h-screen">
+
+  <!-- ===== TOP BAR ===== -->
+  <header class="sticky top-0 z-30 nav-blur" style="padding-top:var(--safe-top)">
+    <div class="px-4 py-3 flex items-center gap-3">
+      <button id="profile-btn" class="relative w-10 h-10 rounded-full bg-carbon border border-white/10 grid place-items-center text-xl">
+        <span id="user-avatar">🇧🇷</span>
+      </button>
+      <div class="flex-1 min-w-0">
+        <div class="text-xs text-muted leading-none">Olá,</div>
+        <div id="user-greeting" class="font-bold text-bone truncate">Torcedor</div>
+      </div>
+      <button id="bell-btn" class="relative w-10 h-10 rounded-full bg-carbon border border-white/10 grid place-items-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+        <span class="notif-dot" id="notif-dot" style="display:none"></span>
+      </button>
+    </div>
+
+    <!-- Quick points strip -->
+    <div class="px-4 pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <div class="chip px-3 py-1.5 flex items-center gap-2 shrink-0">
+        <span class="text-gold text-sm">⚡</span>
+        <span class="text-xs text-muted">Pontos</span>
+        <span id="hud-points" class="font-display text-lg leading-none text-bone">0</span>
+      </div>
+      <div class="chip px-3 py-1.5 flex items-center gap-2 shrink-0">
+        <span class="text-cherry text-sm">🔥</span>
+        <span class="text-xs text-muted">Sequência</span>
+        <span id="hud-streak" class="font-display text-lg leading-none text-bone">0</span>
+      </div>
+      <div class="chip px-3 py-1.5 flex items-center gap-2 shrink-0">
+        <span class="text-neon text-sm">🏆</span>
+        <span class="text-xs text-muted">Pos.</span>
+        <span id="hud-rank" class="font-display text-lg leading-none text-bone">—</span>
+      </div>
+      <div class="chip px-3 py-1.5 flex items-center gap-2 shrink-0">
+        <span class="text-cyan text-sm">📊</span>
+        <span class="text-xs text-muted">Acertos</span>
+        <span id="hud-correct" class="font-display text-lg leading-none text-bone">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== SCREEN CONTAINER ===== -->
+  <main id="screens" class="relative z-10 pb-32">
+
+    <!-- HOME -->
+    <section data-screen="home" class="active px-4 pt-2 space-y-5"></section>
+
+    <!-- BOLÃO -->
+    <section data-screen="bolao" class="px-4 pt-2 space-y-5"></section>
+
+    <!-- TABELA -->
+    <section data-screen="tabela" class="px-4 pt-2 space-y-5"></section>
+
+    <!-- GRUPOS -->
+    <section data-screen="grupos" class="px-4 pt-2 space-y-5"></section>
+
+    <!-- ZOEIRA -->
+    <section data-screen="zoeira" class="px-4 pt-2 space-y-5"></section>
+
+    <!-- PERFIL -->
+    <section data-screen="perfil" class="px-4 pt-2 space-y-5"></section>
+  </main>
+
+  <!-- ===== BOTTOM NAV ===== -->
+  <nav id="bottom-nav" class="fixed left-0 right-0 z-30 nav-blur border-t border-white/5"
+       style="bottom:0; padding-bottom: calc(8px + var(--safe-bottom))">
+    <div class="max-w-[430px] mx-auto grid grid-cols-6 px-1 pt-2">
+      <button class="nav-tab tab-active flex flex-col items-center gap-1 py-2" data-tab="home">
+        <span class="tab-ico text-lg">🏟️</span>
+        <span class="tab-label text-[9px] uppercase tracking-wider text-muted font-bold">Início</span>
+      </button>
+      <button class="nav-tab flex flex-col items-center gap-1 py-2" data-tab="bolao">
+        <span class="tab-ico text-lg">🎯</span>
+        <span class="tab-label text-[9px] uppercase tracking-wider text-muted font-bold">Bolão</span>
+      </button>
+      <button class="nav-tab flex flex-col items-center gap-1 py-2" data-tab="tabela">
+        <span class="tab-ico text-lg">📋</span>
+        <span class="tab-label text-[9px] uppercase tracking-wider text-muted font-bold">Tabela</span>
+      </button>
+      <button class="nav-tab flex flex-col items-center gap-1 py-2" data-tab="grupos">
+        <span class="tab-ico text-lg">👥</span>
+        <span class="tab-label text-[9px] uppercase tracking-wider text-muted font-bold">Grupos</span>
+      </button>
+      <button class="nav-tab flex flex-col items-center gap-1 py-2" data-tab="zoeira">
+        <span class="tab-ico text-lg">😂</span>
+        <span class="tab-label text-[9px] uppercase tracking-wider text-muted font-bold">Zoeira</span>
+      </button>
+      <button class="nav-tab flex flex-col items-center gap-1 py-2" data-tab="perfil">
+        <span class="tab-ico text-lg">⭐</span>
+        <span class="tab-label text-[9px] uppercase tracking-wider text-muted font-bold">Perfil</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== MODAL LAYER ===== -->
+  <div id="modal-root" class="hidden fixed inset-0 z-40 modal-back" style="display:none">
+    <div id="modal-content" class="absolute bottom-0 left-0 right-0 max-w-[430px] mx-auto sheet max-h-[90vh] overflow-y-auto"></div>
+  </div>
+
+  <!-- ===== TOAST LAYER ===== -->
+  <div id="toast-root" class="fixed left-1/2 -translate-x-1/2 z-50 pointer-events-none"
+       style="top: calc(var(--safe-top) + 16px); max-width: 90%"></div>
+
+  <!-- ===== CONFETTI ===== -->
+  <div id="confetti-root" class="confetti" aria-hidden="true"></div>
+</div>
+
+<script>
+/* ============================================================
+   BOLÃO BR — Copa 2026
+   Single-file PWA app. HTML + Tailwind + Vanilla JS.
+   Architecture:
+   - mock data (TEAMS, MATCHES, PLAYERS, FRIENDS, GROUPS, MEMES)
+   - state (loaded from / saved to localStorage)
+   - screens (home, bolão, grupos, zoeira, perfil) — render functions
+   - components (matchCard, predictModal, longTermModal, groupCard, shareCard...)
+   - notifications (toast + sim push)
+   - service worker registration (best-effort)
+   ============================================================ */
+
+/* ---------------- 1. MOCK DATA — COPA DO MUNDO 2026 ---------------- */
+/* Fonte: Sorteio oficial FIFA (Washington, 05/12/2025) + calendário Trivela.
+   Horários em Brasília (UTC-3). Sedes: EUA, México, Canadá. */
+
+const TEAMS = [
+  // Grupo A
+  { id:'MEX', name:'México',         flag:'🇲🇽', group:'A' },
+  { id:'RSA', name:'África do Sul',  flag:'🇿🇦', group:'A' },
+  { id:'KOR', name:'Coreia do Sul',  flag:'🇰🇷', group:'A' },
+  { id:'CZE', name:'Tchéquia',       flag:'🇨🇿', group:'A' },
+  // Grupo B
+  { id:'CAN', name:'Canadá',         flag:'🇨🇦', group:'B' },
+  { id:'BIH', name:'Bósnia',         flag:'🇧🇦', group:'B' },
+  { id:'QAT', name:'Catar',          flag:'🇶🇦', group:'B' },
+  { id:'SUI', name:'Suíça',          flag:'🇨🇭', group:'B' },
+  // Grupo C
+  { id:'BRA', name:'Brasil',         flag:'🇧🇷', group:'C' },
+  { id:'MAR', name:'Marrocos',       flag:'🇲🇦', group:'C' },
+  { id:'HAI', name:'Haiti',          flag:'🇭🇹', group:'C' },
+  { id:'SCO', name:'Escócia',        flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', group:'C' },
+  // Grupo D
+  { id:'USA', name:'EUA',            flag:'🇺🇸', group:'D' },
+  { id:'PAR', name:'Paraguai',       flag:'🇵🇾', group:'D' },
+  { id:'AUS', name:'Austrália',      flag:'🇦🇺', group:'D' },
+  { id:'TUR', name:'Turquia',        flag:'🇹🇷', group:'D' },
+  // Grupo E
+  { id:'GER', name:'Alemanha',       flag:'🇩🇪', group:'E' },
+  { id:'CUW', name:'Curaçao',        flag:'🇨🇼', group:'E' },
+  { id:'CIV', name:'Costa do Marfim',flag:'🇨🇮', group:'E' },
+  { id:'ECU', name:'Equador',        flag:'🇪🇨', group:'E' },
+  // Grupo F
+  { id:'NED', name:'Holanda',        flag:'🇳🇱', group:'F' },
+  { id:'JPN', name:'Japão',          flag:'🇯🇵', group:'F' },
+  { id:'SWE', name:'Suécia',         flag:'🇸🇪', group:'F' },
+  { id:'TUN', name:'Tunísia',        flag:'🇹🇳', group:'F' },
+  // Grupo G
+  { id:'BEL', name:'Bélgica',        flag:'🇧🇪', group:'G' },
+  { id:'EGY', name:'Egito',          flag:'🇪🇬', group:'G' },
+  { id:'IRN', name:'Irã',            flag:'🇮🇷', group:'G' },
+  { id:'NZL', name:'Nova Zelândia',  flag:'🇳🇿', group:'G' },
+  // Grupo H
+  { id:'ESP', name:'Espanha',        flag:'🇪🇸', group:'H' },
+  { id:'CPV', name:'Cabo Verde',     flag:'🇨🇻', group:'H' },
+  { id:'KSA', name:'Arábia Saudita', flag:'🇸🇦', group:'H' },
+  { id:'URU', name:'Uruguai',        flag:'🇺🇾', group:'H' },
+  // Grupo I
+  { id:'FRA', name:'França',         flag:'🇫🇷', group:'I' },
+  { id:'SEN', name:'Senegal',        flag:'🇸🇳', group:'I' },
+  { id:'IRQ', name:'Iraque',         flag:'🇮🇶', group:'I' },
+  { id:'NOR', name:'Noruega',        flag:'🇳🇴', group:'I' },
+  // Grupo J
+  { id:'ARG', name:'Argentina',      flag:'🇦🇷', group:'J' },
+  { id:'ALG', name:'Argélia',        flag:'🇩🇿', group:'J' },
+  { id:'AUT', name:'Áustria',        flag:'🇦🇹', group:'J' },
+  { id:'JOR', name:'Jordânia',       flag:'🇯🇴', group:'J' },
+  // Grupo K
+  { id:'POR', name:'Portugal',       flag:'🇵🇹', group:'K' },
+  { id:'COD', name:'RD Congo',       flag:'🇨🇩', group:'K' },
+  { id:'UZB', name:'Uzbequistão',    flag:'🇺🇿', group:'K' },
+  { id:'COL', name:'Colômbia',       flag:'🇨🇴', group:'K' },
+  // Grupo L
+  { id:'ENG', name:'Inglaterra',     flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', group:'L' },
+  { id:'CRO', name:'Croácia',        flag:'🇭🇷', group:'L' },
+  { id:'GHA', name:'Gana',           flag:'🇬🇭', group:'L' },
+  { id:'PAN', name:'Panamá',         flag:'🇵🇦', group:'L' },
+];
+
+const GROUP_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+const teamById = id => TEAMS.find(t => t.id===id);
+const teamsByGroup = letter => TEAMS.filter(t => t.group===letter);
+
+/* Helper: build ISO date (Brasília UTC-3) for a 2026 match. */
+function bsb(month, day, hour, minute=0){
+  // Brasília = UTC-3 (sem horário de verão). 13h BSB = 16:00 UTC.
+  const utcHour = hour + 3;
+  // Pode estourar para o próximo dia em UTC mas o ISO normaliza:
+  return new Date(Date.UTC(2026, month-1, day, utcHour, minute, 0)).toISOString();
+}
+
+/* MATCHES — calendário oficial Copa 2026 (104 jogos)
+   Cada jogo: { id, n, stage, group, a, b, city, date(ISO) }
+   stage = 'G' (grupos), 'R32' (16-avos), 'R16' (oitavas), 'QF', 'SF', '3rd', 'F' */
+const MATCHES = [
+  // === FASE DE GRUPOS ===
+  // QUI 11/06
+  { id:'g01', n:1,  stage:'G', group:'A', a:'MEX', b:'RSA', city:'Cidade do México', date: bsb(6,11,16) },
+  { id:'g02', n:2,  stage:'G', group:'A', a:'KOR', b:'CZE', city:'Guadalajara',      date: bsb(6,11,23) },
+  // SEX 12/06
+  { id:'g03', n:3,  stage:'G', group:'B', a:'CAN', b:'BIH', city:'Toronto',          date: bsb(6,12,16) },
+  { id:'g04', n:4,  stage:'G', group:'D', a:'USA', b:'PAR', city:'Los Angeles',      date: bsb(6,12,22) },
+  // SÁB 13/06
+  { id:'g05', n:6,  stage:'G', group:'D', a:'AUS', b:'TUR', city:'Vancouver',        date: bsb(6,13,1)  },
+  { id:'g06', n:8,  stage:'G', group:'B', a:'QAT', b:'SUI', city:'São Francisco',    date: bsb(6,13,16) },
+  { id:'g07', n:7,  stage:'G', group:'C', a:'BRA', b:'MAR', city:'Nova York',        date: bsb(6,13,19) },
+  { id:'g08', n:5,  stage:'G', group:'C', a:'HAI', b:'SCO', city:'Boston',           date: bsb(6,13,22) },
+  // DOM 14/06
+  { id:'g09', n:10, stage:'G', group:'E', a:'GER', b:'CUW', city:'Houston',          date: bsb(6,14,14) },
+  { id:'g10', n:11, stage:'G', group:'F', a:'NED', b:'JPN', city:'Dallas',           date: bsb(6,14,17) },
+  { id:'g11', n:9,  stage:'G', group:'E', a:'CIV', b:'ECU', city:'Filadélfia',       date: bsb(6,14,20) },
+  { id:'g12', n:12, stage:'G', group:'F', a:'SWE', b:'TUN', city:'Monterrey',        date: bsb(6,14,23) },
+  // SEG 15/06
+  { id:'g13', n:14, stage:'G', group:'H', a:'ESP', b:'CPV', city:'Atlanta',          date: bsb(6,15,13) },
+  { id:'g14', n:16, stage:'G', group:'G', a:'BEL', b:'EGY', city:'Seattle',          date: bsb(6,15,16) },
+  { id:'g15', n:13, stage:'G', group:'H', a:'KSA', b:'URU', city:'Miami',            date: bsb(6,15,19) },
+  { id:'g16', n:15, stage:'G', group:'G', a:'IRN', b:'NZL', city:'Los Angeles',      date: bsb(6,15,22) },
+  // TER 16/06
+  { id:'g17', n:20, stage:'G', group:'J', a:'AUT', b:'JOR', city:'São Francisco',    date: bsb(6,16,1)  },
+  { id:'g18', n:17, stage:'G', group:'I', a:'FRA', b:'SEN', city:'Nova York',        date: bsb(6,16,16) },
+  { id:'g19', n:18, stage:'G', group:'I', a:'IRQ', b:'NOR', city:'Boston',           date: bsb(6,16,19) },
+  { id:'g20', n:19, stage:'G', group:'J', a:'ARG', b:'ALG', city:'Kansas City',      date: bsb(6,16,22) },
+  // QUA 17/06
+  { id:'g21', n:23, stage:'G', group:'K', a:'POR', b:'COD', city:'Houston',          date: bsb(6,17,14) },
+  { id:'g22', n:22, stage:'G', group:'L', a:'ENG', b:'CRO', city:'Dallas',           date: bsb(6,17,17) },
+  { id:'g23', n:21, stage:'G', group:'L', a:'GHA', b:'PAN', city:'Toronto',          date: bsb(6,17,20) },
+  { id:'g24', n:24, stage:'G', group:'K', a:'UZB', b:'COL', city:'Cidade do México', date: bsb(6,17,23) },
+  // QUI 18/06
+  { id:'g25', n:25, stage:'G', group:'A', a:'CZE', b:'RSA', city:'Atlanta',          date: bsb(6,18,13) },
+  { id:'g26', n:26, stage:'G', group:'B', a:'SUI', b:'BIH', city:'Los Angeles',      date: bsb(6,18,16) },
+  { id:'g27', n:27, stage:'G', group:'B', a:'CAN', b:'QAT', city:'Vancouver',        date: bsb(6,18,19) },
+  { id:'g28', n:28, stage:'G', group:'A', a:'MEX', b:'KOR', city:'Guadalajara',      date: bsb(6,18,22) },
+  // SEX 19/06
+  { id:'g29', n:31, stage:'G', group:'D', a:'TUR', b:'PAR', city:'São Francisco',    date: bsb(6,19,1)  },
+  { id:'g30', n:32, stage:'G', group:'D', a:'USA', b:'AUS', city:'Seattle',          date: bsb(6,19,16) },
+  { id:'g31', n:30, stage:'G', group:'C', a:'SCO', b:'MAR', city:'Boston',           date: bsb(6,19,19) },
+  { id:'g32', n:29, stage:'G', group:'C', a:'BRA', b:'HAI', city:'Filadélfia',       date: bsb(6,19,22) },
+  // SÁB 20/06
+  { id:'g33', n:36, stage:'G', group:'F', a:'TUN', b:'JPN', city:'Monterrey',        date: bsb(6,20,1)  },
+  { id:'g34', n:35, stage:'G', group:'F', a:'NED', b:'SWE', city:'Houston',          date: bsb(6,20,14) },
+  { id:'g35', n:33, stage:'G', group:'E', a:'GER', b:'CIV', city:'Toronto',          date: bsb(6,20,17) },
+  { id:'g36', n:34, stage:'G', group:'E', a:'ECU', b:'CUW', city:'Kansas City',      date: bsb(6,20,21) },
+  // DOM 21/06
+  { id:'g37', n:38, stage:'G', group:'H', a:'ESP', b:'KSA', city:'Atlanta',          date: bsb(6,21,13) },
+  { id:'g38', n:39, stage:'G', group:'G', a:'BEL', b:'IRN', city:'Los Angeles',      date: bsb(6,21,16) },
+  { id:'g39', n:37, stage:'G', group:'H', a:'URU', b:'CPV', city:'Miami',            date: bsb(6,21,19) },
+  { id:'g40', n:40, stage:'G', group:'G', a:'NZL', b:'EGY', city:'Vancouver',        date: bsb(6,21,22) },
+  // SEG 22/06
+  { id:'g41', n:44, stage:'G', group:'J', a:'JOR', b:'ALG', city:'São Francisco',    date: bsb(6,22,0)  },
+  { id:'g42', n:43, stage:'G', group:'J', a:'ARG', b:'AUT', city:'Dallas',           date: bsb(6,22,14) },
+  { id:'g43', n:42, stage:'G', group:'I', a:'FRA', b:'IRQ', city:'Filadélfia',       date: bsb(6,22,18) },
+  { id:'g44', n:41, stage:'G', group:'I', a:'NOR', b:'SEN', city:'Nova York',        date: bsb(6,22,21) },
+  // TER 23/06
+  { id:'g45', n:47, stage:'G', group:'K', a:'POR', b:'UZB', city:'Houston',          date: bsb(6,23,14) },
+  { id:'g46', n:45, stage:'G', group:'L', a:'ENG', b:'GHA', city:'Boston',           date: bsb(6,23,17) },
+  { id:'g47', n:46, stage:'G', group:'L', a:'PAN', b:'CRO', city:'Toronto',          date: bsb(6,23,20) },
+  { id:'g48', n:48, stage:'G', group:'K', a:'COL', b:'COD', city:'Guadalajara',      date: bsb(6,23,23) },
+  // QUA 24/06
+  { id:'g49', n:51, stage:'G', group:'B', a:'SUI', b:'CAN', city:'Vancouver',        date: bsb(6,24,16) },
+  { id:'g50', n:52, stage:'G', group:'B', a:'BIH', b:'QAT', city:'Seattle',          date: bsb(6,24,16) },
+  { id:'g51', n:49, stage:'G', group:'C', a:'SCO', b:'BRA', city:'Miami',            date: bsb(6,24,19) },
+  { id:'g52', n:50, stage:'G', group:'C', a:'MAR', b:'HAI', city:'Atlanta',          date: bsb(6,24,19) },
+  { id:'g53', n:53, stage:'G', group:'A', a:'CZE', b:'MEX', city:'Cidade do México', date: bsb(6,24,22) },
+  { id:'g54', n:54, stage:'G', group:'A', a:'RSA', b:'KOR', city:'Monterrey',        date: bsb(6,24,22) },
+  // QUI 25/06
+  { id:'g55', n:55, stage:'G', group:'E', a:'CUW', b:'CIV', city:'Filadélfia',       date: bsb(6,25,17) },
+  { id:'g56', n:56, stage:'G', group:'E', a:'ECU', b:'GER', city:'Nova York',        date: bsb(6,25,17) },
+  { id:'g57', n:57, stage:'G', group:'F', a:'JPN', b:'SWE', city:'Dallas',           date: bsb(6,25,20) },
+  { id:'g58', n:58, stage:'G', group:'F', a:'TUN', b:'NED', city:'Kansas City',      date: bsb(6,25,20) },
+  { id:'g59', n:59, stage:'G', group:'D', a:'TUR', b:'USA', city:'Los Angeles',      date: bsb(6,25,23) },
+  { id:'g60', n:60, stage:'G', group:'D', a:'PAR', b:'AUS', city:'São Francisco',    date: bsb(6,25,23) },
+  // SEX 26/06
+  { id:'g61', n:61, stage:'G', group:'I', a:'NOR', b:'FRA', city:'Boston',           date: bsb(6,26,16) },
+  { id:'g62', n:62, stage:'G', group:'I', a:'SEN', b:'IRQ', city:'Toronto',          date: bsb(6,26,16) },
+  { id:'g63', n:65, stage:'G', group:'H', a:'CPV', b:'KSA', city:'Houston',          date: bsb(6,26,21) },
+  { id:'g64', n:66, stage:'G', group:'H', a:'URU', b:'ESP', city:'Guadalajara',      date: bsb(6,26,21) },
+  // SÁB 27/06
+  { id:'g65', n:63, stage:'G', group:'G', a:'EGY', b:'IRN', city:'Seattle',          date: bsb(6,27,0)  },
+  { id:'g66', n:64, stage:'G', group:'G', a:'NZL', b:'BEL', city:'Vancouver',        date: bsb(6,27,0)  },
+  { id:'g67', n:67, stage:'G', group:'L', a:'PAN', b:'ENG', city:'Nova York',        date: bsb(6,27,18) },
+  { id:'g68', n:68, stage:'G', group:'L', a:'CRO', b:'GHA', city:'Filadélfia',       date: bsb(6,27,18) },
+  { id:'g69', n:71, stage:'G', group:'K', a:'COL', b:'POR', city:'Miami',            date: bsb(6,27,20,30) },
+  { id:'g70', n:72, stage:'G', group:'K', a:'COD', b:'UZB', city:'Atlanta',          date: bsb(6,27,20,30) },
+  { id:'g71', n:69, stage:'G', group:'J', a:'ALG', b:'AUT', city:'Kansas City',      date: bsb(6,27,23) },
+  { id:'g72', n:70, stage:'G', group:'J', a:'JOR', b:'ARG', city:'Dallas',           date: bsb(6,27,23) },
+
+  // === MATA-MATA — Placeholders (definidos após fase de grupos) ===
+  // 1/16 avos
+  { id:'r1', n:73, stage:'R32', city:'Los Angeles', placeholder:'2A x 2B',                 date: bsb(6,28,16) },
+  { id:'r2', n:76, stage:'R32', city:'Houston',     placeholder:'1C x 2F',                 date: bsb(6,29,14) },
+  { id:'r3', n:74, stage:'R32', city:'Boston',      placeholder:'1E x 3º (ABCDF)',         date: bsb(6,29,17,30) },
+  { id:'r4', n:75, stage:'R32', city:'Monterrey',   placeholder:'1F x 2C',                 date: bsb(6,29,22) },
+  { id:'r5', n:78, stage:'R32', city:'Dallas',      placeholder:'2E x 2I',                 date: bsb(6,30,14) },
+  { id:'r6', n:77, stage:'R32', city:'Nova York',   placeholder:'1I x 3º (CDFGH)',         date: bsb(6,30,18) },
+  { id:'r7', n:79, stage:'R32', city:'Cidade do México', placeholder:'1A x 3º (CEFHI)',    date: bsb(6,30,22) },
+  { id:'r8', n:80, stage:'R32', city:'Atlanta',     placeholder:'1L x 3º (EHIJK)',         date: bsb(7,1,13)  },
+  { id:'r9', n:82, stage:'R32', city:'Seattle',     placeholder:'1G x 3º (AEHIJ)',         date: bsb(7,1,17)  },
+  { id:'r10',n:81, stage:'R32', city:'São Francisco', placeholder:'1D x 3º (BEFIJ)',       date: bsb(7,1,21)  },
+  { id:'r11',n:85, stage:'R32', city:'Vancouver',   placeholder:'1B x 3º (EFGIJ)',         date: bsb(7,2,0)   },
+  { id:'r12',n:84, stage:'R32', city:'Los Angeles', placeholder:'1H x 2J',                 date: bsb(7,2,16)  },
+  { id:'r13',n:83, stage:'R32', city:'Toronto',     placeholder:'2K x 2L',                 date: bsb(7,2,20)  },
+  { id:'r14',n:88, stage:'R32', city:'Dallas',      placeholder:'2D x 2G',                 date: bsb(7,3,15)  },
+  { id:'r15',n:86, stage:'R32', city:'Atlanta',     placeholder:'1J x 2H',                 date: bsb(7,3,17)  },
+  { id:'r16',n:87, stage:'R32', city:'Kansas City', placeholder:'1K x 3º (DEIJL)',         date: bsb(7,3,22,30) },
+  // Oitavas
+  { id:'o1', n:90, stage:'R16', city:'Houston',     placeholder:'V73 x V75', date: bsb(7,4,14) },
+  { id:'o2', n:89, stage:'R16', city:'Filadélfia',  placeholder:'V74 x V77', date: bsb(7,4,18) },
+  { id:'o3', n:91, stage:'R16', city:'Nova Jersey', placeholder:'V76 x V78', date: bsb(7,5,17) },
+  { id:'o4', n:92, stage:'R16', city:'Cidade do México', placeholder:'V79 x V80', date: bsb(7,5,21) },
+  { id:'o5', n:93, stage:'R16', city:'Dallas',      placeholder:'V83 x V84', date: bsb(7,6,15) },
+  { id:'o6', n:94, stage:'R16', city:'Seattle',     placeholder:'V81 x V82', date: bsb(7,6,20) },
+  { id:'o7', n:95, stage:'R16', city:'Atlanta',     placeholder:'V86 x V88', date: bsb(7,7,13) },
+  { id:'o8', n:96, stage:'R16', city:'Vancouver',   placeholder:'V85 x V87', date: bsb(7,7,17) },
+  // Quartas
+  { id:'q1', n:97, stage:'QF',  city:'Boston',      placeholder:'V89 x V90', date: bsb(7,9,17)  },
+  { id:'q2', n:98, stage:'QF',  city:'Los Angeles', placeholder:'V93 x V94', date: bsb(7,10,16) },
+  { id:'q3', n:99, stage:'QF',  city:'Miami',       placeholder:'V91 x V92', date: bsb(7,11,18) },
+  { id:'q4',n:100, stage:'QF',  city:'Kansas City', placeholder:'V95 x V96', date: bsb(7,11,21) },
+  // Semis
+  { id:'s1',n:101, stage:'SF',  city:'Dallas',      placeholder:'V97 x V98', date: bsb(7,14,16) },
+  { id:'s2',n:102, stage:'SF',  city:'Atlanta',     placeholder:'V99 x V100',date: bsb(7,15,16) },
+  // 3º lugar
+  { id:'t1',n:103, stage:'3rd', city:'Miami',       placeholder:'Perdedores das semis', date: bsb(7,18,18) },
+  // Final
+  { id:'f1',n:104, stage:'F',   city:'Nova Jersey', placeholder:'Final da Copa do Mundo 2026', date: bsb(7,19,16) },
+];
+
+/* Determinar status dinâmico do jogo (live/final/upcoming) baseado em now() */
+function matchStatus(m){
+  const start = new Date(m.date).getTime();
+  const t = Date.now();
+  if(t < start) return 'upcoming';
+  if(t > start + 2*60*60*1000) return 'final';
+  return 'live';
+}
+function matchMinute(m){
+  const elapsed = (Date.now() - new Date(m.date).getTime())/60000;
+  return Math.max(1, Math.min(90, Math.floor(elapsed)));
+}
+function matchStageLabel(m){
+  if(m.stage==='G')    return `Grupo ${m.group} · Jogo ${m.n}`;
+  if(m.stage==='R32')  return `16-avos · Jogo ${m.n}`;
+  if(m.stage==='R16')  return `Oitavas · Jogo ${m.n}`;
+  if(m.stage==='QF')   return `Quartas · Jogo ${m.n}`;
+  if(m.stage==='SF')   return `Semifinal · Jogo ${m.n}`;
+  if(m.stage==='3rd')  return `3º lugar · Jogo ${m.n}`;
+  if(m.stage==='F')    return `🏆 FINAL · Jogo ${m.n}`;
+  return '';
+}
+
+/* Candidatos a artilheiro — apenas seleções classificadas para a Copa 2026 */
+const PLAYERS = [
+  { id:'p1',  name:'Mbappé',          team:'FRA', odds:4.5 },
+  { id:'p2',  name:'Vinicius Jr',     team:'BRA', odds:6.5 },
+  { id:'p3',  name:'Harry Kane',      team:'ENG', odds:7.0 },
+  { id:'p4',  name:'Lautaro Martínez',team:'ARG', odds:7.5 },
+  { id:'p5',  name:'Haaland',         team:'NOR', odds:8.5 },
+  { id:'p6',  name:'Rodrygo',         team:'BRA', odds:9.0 },
+  { id:'p7',  name:'Bellingham',      team:'ENG', odds:9.5 },
+  { id:'p8',  name:'Lamine Yamal',    team:'ESP', odds:10.0 },
+  { id:'p9',  name:'Messi',           team:'ARG', odds:11.0 },
+  { id:'p10', name:'Endrick',         team:'BRA', odds:12.0 },
+  { id:'p11', name:'Cristiano Ronaldo',team:'POR',odds:14.0 },
+  { id:'p12', name:'Memphis Depay',   team:'NED', odds:15.0 },
+  { id:'p13', name:'Mohamed Salah',   team:'EGY', odds:16.0 },
+  { id:'p14', name:'Olise',           team:'FRA', odds:17.0 },
+  { id:'p15', name:'Heung-min Son',   team:'KOR', odds:18.0 },
+  { id:'p16', name:'Musiala',         team:'GER', odds:18.0 },
+  { id:'p17', name:'Luis Díaz',       team:'COL', odds:20.0 },
+  { id:'p18', name:'Pulisic',         team:'USA', odds:22.0 },
+  { id:'p19', name:'Hakimi',          team:'MAR', odds:25.0 },
+  { id:'p20', name:'Lukaku',          team:'BEL', odds:25.0 },
+];
+
+const MOCK_FRIENDS = [
+  { id:'u1', name:'João Pedro',  avatar:'🦁', team:'BRA' },
+  { id:'u2', name:'Ana Beatriz', avatar:'🐉', team:'ARG' },
+  { id:'u3', name:'Carlos Tio',  avatar:'🐺', team:'BRA' },
+  { id:'u4', name:'Mariana',     avatar:'🦅', team:'POR' },
+  { id:'u5', name:'Lucas Zoeiro',avatar:'🤡', team:'BRA' },
+  { id:'u6', name:'Rafael F.',   avatar:'🐯', team:'FRA' },
+  { id:'u7', name:'Beto do Bar', avatar:'🦊', team:'BRA' },
+  { id:'u8', name:'Camila',      avatar:'🦋', team:'ESP' },
+];
+
+const MEME_PHRASES = [
+  '🥶 Especialista em errar placar.',
+  '🔮 Vidente da Copa.',
+  '🧊 Pé frio oficial.',
+  '🎯 Acertou sem querer.',
+  '🚓 Esse palpite foi criminoso.',
+  '🐍 Cobra cega chutando a esmo.',
+  '🍀 A sorte é a única amiga.',
+  '🤡 Palpiteiro de boteco.',
+  '👑 Rei do palpite (do nada).',
+  '🤓 Estatístico do WhatsApp da família.',
+  '📉 Em queda livre no ranking.',
+  '🎰 Apostou tudo no zebra.',
+  '🐐 GOAT do bolão (por enquanto).',
+  '🍻 Comentarista de mesa de bar.',
+  '🚀 Subindo no ranking sem freio.',
+  '🦥 Demorou pra palpitar e levou 0.',
+  '🥶 Congelou no momento decisivo.',
+  '🎤 Já tá ensaiando o discurso de campeão.',
+];
+
+const MEME_TITLES = [
+  'O Vidente', 'O Pé-Frio', 'O Cobra-Cega', 'O Sortudo',
+  'O Estatístico', 'O Boca-Suja', 'O Pênalti Perdido', 'O VAR',
+  'O Tio do Pavê', 'O Cartola de Boteco', 'O Mister', 'O Profeta',
+];
+
+const REACTIONS = ['🔥','💀','🤡','😂','🐐','💩','👑','🥶','😭','🙏'];
+
+const GROUP_AVATARS = ['⚽','🏆','🦅','🐉','🦁','🐯','🦊','🌟','💎','🎯','🍻','🎉','🚀','👑','🐐','💀'];
+
+/* ---------------- 2. STATE + STORAGE ---------------- */
+const LS_KEY = 'bolao_br_state_v1';
+
+const defaultState = {
+  user: {
+    name: 'Torcedor',
+    avatar: '🇧🇷',
+    team: 'BRA',
+    points: 0,
+    streak: 0,
+    correct: 0,
+    titles: [],
+    history: [],          // { matchId, palpite, real, pts, ts }
+  },
+  predictions: {},        // matchId -> {a,b, ts}
+  longterm: {
+    champion: null,
+    vice: null,
+    topScorer: null,
+    surprise: null,
+    locked: false,
+  },
+  groups: [],             // {id,name,emoji, color, members:[ids], creator, ranking? }
+  selectedGroupId: null,
+  reactions: {},          // matchId -> [emoji]
+  notifications: [],      // {id,type,title,body,ts,read}
+  userScores: {},         // matchId -> {a, b}  (placares preenchidos manualmente na Tabela)
+  koWinners: {},          // matchId -> teamId  (vencedor escolhido pra mata-mata)
+  settings: { darkMode: true, notifs: true },
+  installed: false,
+};
+
+let state = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return seedState(structuredClone(defaultState));
+    const parsed = JSON.parse(raw);
+    // shallow merge defaults
+    return Object.assign(structuredClone(defaultState), parsed);
+  }catch(e){ return seedState(structuredClone(defaultState)); }
+}
+function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+function seedState(s){
+  // initial demo group with friends
+  s.groups = [{
+    id:'g_demo',
+    name:'Os Boleiros da Firma',
+    emoji:'🍻',
+    color:'#00ffa3',
+    members:['me','u1','u2','u3','u4','u5'],
+    creator:'me',
+    code:'BR-DEMO1',
+    createdAt: Date.now()
+  }];
+  s.selectedGroupId = 'g_demo';
+  // Copa 2026 começa em 11/06/2026 — antes disso não há jogos julgados.
+  s.user.points = 0;
+  s.user.streak = 0;
+  s.user.correct = 0;
+  s.user.titles = [];
+  s.predictions = {};
+  s.user.history = [];
+  // Calcula dias até a estreia do Brasil (13/06/2026 19h)
+  const braStart = new Date(Date.UTC(2026,5,13,22,0,0)).getTime();
+  const days = Math.max(0, Math.ceil((braStart - Date.now())/86400000));
+  s.notifications = [
+    { id:'n1', type:'warn', title:'⏰ Estreia do Brasil!', body:`Brasil x Marrocos em ${days} dia${days===1?'':'s'} — 13/06, 19h (Brasília). Não esqueça o palpite!`, ts: Date.now()-1000*60*30, read:false },
+    { id:'n2', type:'rank', title:'🏟️ Tabela atualizada', body:'Todos os 12 grupos da Copa 2026 já estão no app. Confira a tela "Bolão".', ts: Date.now()-1000*60*60*2, read:false },
+    { id:'n3', type:'meme', title:'😂 Mariana te zoou',    body:'"Vidente da Copa." — antes mesmo de você palpitar!', ts: Date.now()-1000*60*60*5, read:true },
+    { id:'n4', type:'rank', title:'🎯 Bolão de longo prazo', body:'Faltam poucas semanas pra travar campeão, vice, artilheiro e surpresa. Bônus de até +500 pts.', ts: Date.now()-1000*60*60*12, read:true },
+  ];
+  return s;
+}
+
+/* ============================================================
+   CLOUD SYNC — Multi-usuário em tempo real (estilo Cartola)
+   ============================================================
+   Esta camada abstrai a sincronização entre dispositivos.
+   HOJE (MVP) funciona local-only (localStorage).
+   AMANHÃ (produção) basta plugar Firebase/Supabase aqui:
+   nada mais no app precisa mudar.
+
+   PASSO A PASSO PARA ATIVAR O FIREBASE:
+   ─────────────────────────────────────
+   1. Vá em https://console.firebase.google.com → "Adicionar projeto"
+   2. No projeto criado, ative:
+      - Authentication (método: anônimo, Google ou e-mail)
+      - Firestore Database (modo de produção)
+   3. Em "Configurações do projeto" → "Seus apps" → "Web", copie o
+      objeto firebaseConfig e cole abaixo em window.FIREBASE_CONFIG.
+   4. Substitua o corpo de cada método do CloudSync por uma chamada
+      ao Firestore SDK (exemplo abaixo, comentado).
+   5. Crie as regras de segurança (Firestore Rules) para que cada
+      usuário só leia/escreva o que está autorizado.
+
+   Custo: o plano Spark (grátis) cobre uns milhares de usuários
+   tranquilamente. Pra escalar viral, Blaze custa centavos.
+   ============================================================ */
+
+// FIREBASE_CONFIG é definido em firebase-config.js (carregado no <head>).
+// Se não for definido (config inválida ou arquivo ausente), o app roda offline.
+if (typeof window.FIREBASE_CONFIG === 'undefined') window.FIREBASE_CONFIG = null;
+
+const CloudSync = {
+  // Está sincronizando online?
+  isOnline(){ return !!window.FIREBASE_CONFIG && !!window._firebaseReady; },
+
+  /* CRIA GRUPO na nuvem
+     EXEMPLO COM FIREBASE:
+       import { doc, setDoc } from 'firebase/firestore';
+       await setDoc(doc(db, 'groups', group.id), {
+         name: group.name, emoji: group.emoji, color: group.color,
+         code: group.code, creator: auth.currentUser.uid,
+         members: [auth.currentUser.uid], createdAt: serverTimestamp()
+       });
+  */
+  async createGroup(group){
+    if(!this.isOnline()) return null;
+    // TODO: implementar gravação no Firestore
+    return group;
+  },
+
+  /* BUSCA grupo pelo código (alguém querendo entrar)
+     EXEMPLO COM FIREBASE:
+       import { collection, query, where, getDocs } from 'firebase/firestore';
+       const q = query(collection(db,'groups'), where('code','==',code));
+       const snap = await getDocs(q);
+       return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() };
+  */
+  async findGroupByCode(code){
+    if(!this.isOnline()) return null;
+    // TODO: buscar no Firestore
+    return null;
+  },
+
+  /* ENTRA no grupo (adiciona uid aos membros)
+     EXEMPLO COM FIREBASE:
+       import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
+       await updateDoc(doc(db,'groups',groupId), {
+         members: arrayUnion(auth.currentUser.uid)
+       });
+  */
+  async joinGroup(groupId){
+    if(!this.isOnline()) return false;
+    // TODO: implementar
+    return true;
+  },
+
+  /* PUBLICA palpite do usuário no Firestore (em /predictions/{uid}/matches/{matchId})
+     EXEMPLO:
+       await setDoc(doc(db, 'predictions', uid, 'matches', matchId), { a, b, ts });
+  */
+  async publishPrediction(matchId, prediction){
+    if(!this.isOnline()) return;
+    // TODO
+  },
+
+  /* OUVE atualizações de palpites do grupo em tempo real
+     EXEMPLO:
+       import { collection, onSnapshot } from 'firebase/firestore';
+       return onSnapshot(collection(db,'groups',groupId,'predictions'), snap => {
+         const all = {}; snap.forEach(d => all[d.id] = d.data()); callback(all);
+       });
+     Retorna função pra cancelar o listener.
+  */
+  subscribeGroupPredictions(groupId, callback){
+    if(!this.isOnline()) return ()=>{};
+    // TODO
+    return ()=>{};
+  },
+
+  /* OUVE placares oficiais (atualizados via Cloud Function que chama API esportiva)
+     EXEMPLO:
+       return onSnapshot(collection(db,'scores'), snap => {
+         const map = {}; snap.forEach(d => map[d.id] = d.data()); callback(map);
+       });
+  */
+  subscribeOfficialScores(callback){
+    if(!this.isOnline()) return ()=>{};
+    // TODO
+    return ()=>{};
+  },
+
+  /* LOGIN — para identificar cada usuário
+     EXEMPLO:
+       import { getAuth, signInAnonymously } from 'firebase/auth';
+       const cred = await signInAnonymously(auth);
+       return cred.user.uid;
+  */
+  async signIn(){
+    if(!this.isOnline()) return 'me'; // local: usuário único
+    // TODO
+    return 'me';
+  },
+};
+
+/* ---------------- 3. UTILS ---------------- */
+const $ = (sel, el=document) => el.querySelector(sel);
+const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+
+function fmtDate(iso){
+  const d = new Date(iso);
+  const days = ['DOM','SEG','TER','QUA','QUI','SEX','SAB'];
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  return `${days[d.getDay()]} · ${d.getDate()}/${d.getMonth()+1} · ${hh}:${mm}`;
+}
+
+function timeAgo(ts){
+  const s = Math.floor((Date.now()-ts)/1000);
+  if(s<60) return 'agora';
+  if(s<3600) return Math.floor(s/60)+' min';
+  if(s<86400) return Math.floor(s/3600)+' h';
+  return Math.floor(s/86400)+' d';
+}
+
+function randPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+function score(real, palpite){
+  if(!real || !palpite) return 0;
+  // exact = 10 ; winner+1diff = 7; winner = 5; only goals = 2
+  if(real.a===palpite.a && real.b===palpite.b) return 10;
+  const rd = real.a-real.b, pd = palpite.a-palpite.b;
+  const sameWinner = (rd>0&&pd>0)||(rd<0&&pd<0)||(rd===0&&pd===0);
+  if(sameWinner && Math.abs(rd-pd)<=1) return 7;
+  if(sameWinner) return 5;
+  if(real.a===palpite.a || real.b===palpite.b) return 2;
+  return 0;
+}
+
+function toast(msg, type='ok'){
+  const root = $('#toast-root');
+  const el = document.createElement('div');
+  const colors = {
+    ok:    'border-neon/40 shadow-glow text-bone',
+    warn:  'border-gold/50 shadow-gold text-gold',
+    err:   'border-cherry/50 shadow-cherry text-cherry',
+  };
+  el.className = `toast ${colors[type]||colors.ok} px-4 py-3 rounded-2xl mb-2 animate-slide-up text-sm font-semibold flex items-center gap-2 pointer-events-auto`;
+  el.innerHTML = msg;
+  root.appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .35s, transform .35s'; el.style.opacity='0'; el.style.transform='translateY(-10px)'; setTimeout(()=>el.remove(),400); }, 2600);
+}
+
+function confetti(){
+  const root = $('#confetti-root');
+  const colors = ['#00ffa3','#ffd60a','#ff2d87','#00e5ff','#caff33'];
+  for(let i=0;i<60;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100+'vw';
+    s.style.background = colors[i%colors.length];
+    s.style.animationDuration = (1.8+Math.random()*1.6)+'s';
+    s.style.animationDelay = (Math.random()*0.4)+'s';
+    s.style.transform = `rotate(${Math.random()*360}deg)`;
+    root.appendChild(s);
+    setTimeout(()=>s.remove(), 3500);
+  }
+}
+
+function openModal(html){
+  const root = $('#modal-root'); const content = $('#modal-content');
+  content.innerHTML = html;
+  root.style.display = 'block';
+  root.classList.add('animate-fade');
+  content.classList.remove('animate-slide-up'); void content.offsetWidth;
+  content.classList.add('animate-slide-up');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  $('#modal-root').style.display='none';
+  $('#modal-content').innerHTML='';
+  document.body.style.overflow='';
+}
+
+/* ---------------- 4. NAVIGATION ---------------- */
+function setTab(name){
+  $$('[data-screen]').forEach(s => s.classList.toggle('active', s.dataset.screen === name));
+  $$('.nav-tab').forEach(b => b.classList.toggle('tab-active', b.dataset.tab === name));
+  renderHUD();
+  if(name==='home')   renderHome();
+  if(name==='bolao')  renderBolao();
+  if(name==='tabela') renderTabela();
+  if(name==='grupos') renderGrupos();
+  if(name==='zoeira') renderZoeira();
+  if(name==='perfil') renderPerfil();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$$('.nav-tab').forEach(b => b.addEventListener('click', ()=>setTab(b.dataset.tab)));
+
+/* ---------------- 5. HUD ---------------- */
+function renderHUD(){
+  $('#hud-points').textContent  = state.user.points;
+  $('#hud-streak').textContent  = state.user.streak;
+  $('#hud-correct').textContent = state.user.correct;
+  // rank within first group (mock)
+  $('#hud-rank').textContent = computeRank() + 'º';
+  $('#user-avatar').textContent = state.user.avatar;
+  $('#user-greeting').textContent = state.user.name;
+  // notif dot
+  const unread = state.notifications.filter(n=>!n.read).length;
+  $('#notif-dot').style.display = unread? 'block':'none';
+}
+
+function computeRank(){
+  // compute rank within selected group based on simulated points
+  const g = state.groups.find(g=>g.id===state.selectedGroupId);
+  if(!g) return 1;
+  const others = g.members.filter(m=>m!=='me').map(uid=>{
+    return { id:uid, points: randIntSeed(uid, 5, 35) };
+  });
+  others.push({ id:'me', points: state.user.points });
+  others.sort((a,b)=>b.points-a.points);
+  return others.findIndex(x=>x.id==='me')+1;
+}
+function randIntSeed(seed, min, max){
+  let h=0; for(let i=0;i<seed.length;i++){ h = (h*31 + seed.charCodeAt(i))>>>0; }
+  return min + (h % (max-min+1));
+}
+
+/* ---------------- 6. HOME SCREEN ---------------- */
+function renderHome(){
+  const screen = $('[data-screen="home"]');
+  const live = MATCHES.filter(m=>matchStatus(m)==='live' && m.stage==='G');
+  const upcoming = MATCHES.filter(m=>matchStatus(m)==='upcoming').slice(0,4);
+  const nextBR = MATCHES.find(m=>matchStatus(m)==='upcoming' && (m.a==='BRA'||m.b==='BRA'));
+
+  // Build leaderboard mini (mock)
+  const g = state.groups.find(g=>g.id===state.selectedGroupId);
+  const leaderboard = (g? g.members:['me']).map(uid=>{
+    if(uid==='me') return { id:'me', name:state.user.name, avatar:state.user.avatar, points:state.user.points };
+    const u = MOCK_FRIENDS.find(f=>f.id===uid) || { id:uid, name:'Amigo', avatar:'🙂' };
+    return { ...u, points: randIntSeed(uid,5,40) };
+  }).sort((a,b)=>b.points-a.points);
+
+  screen.innerHTML = `
+    <!-- Hero / countdown to next BR match -->
+    ${nextBR ? `
+    <div class="card-elev p-5 relative overflow-hidden holo">
+      <div class="text-[10px] tracking-[0.2em] uppercase text-muted mb-1">Próximo jogo da Seleção</div>
+      <div class="flex items-center justify-between gap-3 mt-2">
+        <div class="flex flex-col items-center w-1/3">
+          <div class="flag">${teamById(nextBR.a).flag}</div>
+          <div class="text-xs mt-1 font-bold">${teamById(nextBR.a).name}</div>
+        </div>
+        <div class="text-center w-1/3">
+          <div class="font-display text-5xl leading-none shimmer-text">VS</div>
+          <div class="text-[10px] text-muted mt-2">${matchStageLabel(nextBR)}</div>
+          <div class="text-[10px] text-muted mt-1">${nextBR.city||''}</div>
+        </div>
+        <div class="flex flex-col items-center w-1/3">
+          <div class="flag">${teamById(nextBR.b).flag}</div>
+          <div class="text-xs mt-1 font-bold">${teamById(nextBR.b).name}</div>
+        </div>
+      </div>
+      <div id="countdown-${nextBR.id}" class="mt-4 grid grid-cols-4 gap-2 text-center"></div>
+      <button class="mt-4 w-full btn-primary py-3 rounded-2xl font-display tracking-widest text-base" onclick="openPredictModal('${nextBR.id}')">
+        FAZER MEU PALPITE
+      </button>
+      <div class="absolute -top-10 -right-10 text-[120px] opacity-10 select-none">🏆</div>
+    </div>` : ''}
+
+    <!-- Live -->
+    ${live.length ? `
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl flex items-center gap-2">
+          <span class="live-dot"></span> AO VIVO
+        </h2>
+        <span class="text-xs text-muted">${live.length} jogo${live.length>1?'s':''}</span>
+      </div>
+      <div class="space-y-2">${live.map(matchCard).join('')}</div>
+    </div>` : ''}
+
+    <!-- Próximos -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">PRÓXIMOS JOGOS</h2>
+        <button class="text-xs text-neon font-bold" onclick="setTab('bolao')">VER TUDO →</button>
+      </div>
+      <div class="space-y-2">${upcoming.map(matchCard).join('')}</div>
+    </div>
+
+    <!-- Ranking mini -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">RANKING · ${g?g.emoji+' '+g.name.toUpperCase():''}</h2>
+        <button class="text-xs text-neon font-bold" onclick="setTab('grupos')">VER GRUPO →</button>
+      </div>
+      <div class="card p-3 space-y-2">
+        ${leaderboard.slice(0,5).map((u,i)=>`
+          <div class="flex items-center gap-3 px-2 py-2 rounded-xl ${u.id==='me'?'bg-neon/5 border border-neon/30':''}">
+            <div class="w-6 font-display text-lg text-center ${i===0?'text-gold':i===1?'text-bone':i===2?'text-cherry':'text-muted'}">${i+1}</div>
+            <div class="w-9 h-9 rounded-full bg-carbon border border-white/10 grid place-items-center text-lg">${u.avatar}</div>
+            <div class="flex-1 truncate font-semibold ${u.id==='me'?'text-neon':''}">${u.name}${u.id==='me'?' (você)':''}</div>
+            <div class="font-display text-xl">${u.points}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Bolão longo prazo CTA -->
+    <div class="card p-4 trophy-bg overflow-hidden relative">
+      <div class="text-[10px] tracking-[0.25em] uppercase text-gold mb-1">Bolão de Longo Prazo</div>
+      <div class="font-display text-2xl leading-tight">QUEM SERÁ O <span class="shimmer-text">CAMPEÃO</span>?</div>
+      <div class="text-sm text-muted mt-1">Acerte campeão, vice, artilheiro e seleção surpresa. <span class="text-bone font-bold">Bônus de até +500 pontos.</span></div>
+      <button class="mt-3 px-4 py-2.5 rounded-xl bg-gold text-black font-bold shadow-gold" onclick="openLongTermModal()">
+        ${state.longterm.locked ? '🔒 Já enviei meu palpite' : '🎯 Palpitar agora'}
+      </button>
+      <div class="absolute -right-6 -bottom-6 text-[180px] opacity-10 select-none">🏆</div>
+    </div>
+
+    <!-- Story / share generator preview -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">COMPARTILHAR</h2>
+      </div>
+      <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2 -mx-4 px-4">
+        ${[
+          {k:'leader', label:'Líder do bolão',   color:'from-neon to-cyan'},
+          {k:'daily',  label:'Vencedor do dia',  color:'from-gold to-cherry'},
+          {k:'weekly', label:'Top da semana',    color:'from-cherry to-cyan'},
+          {k:'round',  label:'Campeão da rodada',color:'from-cyan to-neon'},
+          {k:'meme',   label:'Card de zoeira',   color:'from-cherry to-gold'},
+        ].map(s=>`
+          <button onclick="openShareModal('${s.k}')" class="shrink-0 w-32 rounded-2xl overflow-hidden card p-3 text-left active:scale-95 transition">
+            <div class="story bg-gradient-to-br ${s.color} mb-2">
+              <div class="absolute inset-0 grid place-items-center text-white text-3xl font-chant">${s.k==='leader'?'👑':s.k==='daily'?'⚡':s.k==='weekly'?'🚀':s.k==='round'?'🏆':'😂'}</div>
+            </div>
+            <div class="text-xs font-bold">${s.label}</div>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  // Countdown updates
+  if(nextBR){ startCountdown(nextBR); }
+}
+
+function matchCard(m){
+  const tA = teamById(m.a), tB = teamById(m.b);
+  const isPlaceholder = !tA || !tB;
+  const pal = state.predictions[m.id];
+  const status = matchStatus(m);
+  const isLive = status==='live';
+  const isFinal = status==='final';
+  const isUpcoming = status==='upcoming';
+  const hasPredict = !!pal;
+  const stageLbl = matchStageLabel(m);
+
+  let scoreBlock = '';
+  if((isLive || isFinal) && m.score){
+    scoreBlock = `
+      <div class="font-display text-3xl leading-none flex items-center gap-2">
+        <span class="${m.score.a>m.score.b?'text-neon':''}">${m.score.a}</span>
+        <span class="text-muted text-base">·</span>
+        <span class="${m.score.b>m.score.a?'text-neon':''}">${m.score.b}</span>
+      </div>
+      <div class="text-[10px] mt-1 ${isLive?'text-cherry font-bold':'text-muted'}">${isLive?`⚡ ${matchMinute(m)}ʹ AO VIVO`:'ENCERRADO'}</div>
+    `;
+  } else if(isLive && !m.score){
+    scoreBlock = `<div class="font-display text-3xl text-cherry">EM JOGO</div>
+                  <div class="text-[10px] text-cherry mt-1 font-bold">⚡ ${matchMinute(m)}ʹ</div>`;
+  } else {
+    scoreBlock = `<div class="font-display text-3xl leading-none text-muted">VS</div>
+                  <div class="text-[10px] text-muted mt-1">${fmtDate(m.date)}</div>`;
+  }
+
+  // user prediction badge
+  let predictBadge = '';
+  if(isPlaceholder){
+    predictBadge = `<div class="mt-3 text-[11px] text-muted text-center italic">${m.placeholder||'A definir'}</div>`;
+  } else if(hasPredict){
+    const pts = (isFinal && m.score)? score(m.score, pal) : null;
+    predictBadge = `
+      <div class="mt-3 flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10">
+        <div class="text-[11px] text-muted">Seu palpite: <span class="text-bone font-bold">${pal.a} x ${pal.b}</span></div>
+        ${(isFinal && pts!==null)? `<div class="text-[11px] font-bold ${pts>=7?'text-neon':pts>0?'text-gold':'text-cherry'}">${pts>0?`+${pts} pts`:'0 pts'}</div>`:
+        isUpcoming? `<button class="text-[11px] text-cyan font-bold" onclick="event.stopPropagation();openPredictModal('${m.id}')">Editar</button>`:''}
+      </div>`;
+  } else if (isUpcoming){
+    predictBadge = `<button class="mt-3 w-full py-2.5 rounded-xl btn-ghost text-sm font-bold text-neon" onclick="event.stopPropagation();openPredictModal('${m.id}')">+ FAZER PALPITE</button>`;
+  }
+
+  // names/flags for header
+  const flagA = tA? tA.flag : '⚽', nameA = tA? tA.name : 'A definir';
+  const flagB = tB? tB.flag : '⚽', nameB = tB? tB.name : 'A definir';
+
+  return `
+    <div class="card p-4 active:scale-[.99] transition cursor-pointer" onclick="openMatchDetail('${m.id}')">
+      <div class="flex items-center justify-between text-[10px] mb-2">
+        <span class="text-muted tracking-wider">${stageLbl} ${m.city?'· '+m.city:''}</span>
+        ${isLive? '<span class="flex items-center gap-1 text-cherry font-bold"><span class="live-dot"></span> AO VIVO</span>':''}
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex flex-col items-center w-1/3">
+          <div class="text-3xl">${flagA}</div>
+          <div class="text-xs mt-1 text-center font-semibold">${nameA}</div>
+        </div>
+        <div class="text-center w-1/3">${scoreBlock}</div>
+        <div class="flex flex-col items-center w-1/3">
+          <div class="text-3xl">${flagB}</div>
+          <div class="text-xs mt-1 text-center font-semibold">${nameB}</div>
+        </div>
+      </div>
+      ${predictBadge}
+    </div>
+  `;
+}
+
+function startCountdown(m){
+  const el = document.getElementById('countdown-'+m.id); if(!el) return;
+  function tick(){
+    const target = new Date(m.date).getTime();
+    let diff = target - Date.now();
+    if(diff <= 0){ el.innerHTML = '<div class="col-span-4 text-center text-cherry font-bold">⚡ COMEÇOU</div>'; return; }
+    const d = Math.floor(diff/86400000); diff -= d*86400000;
+    const h = Math.floor(diff/3600000); diff -= h*3600000;
+    const mn= Math.floor(diff/60000); diff -= mn*60000;
+    const s = Math.floor(diff/1000);
+    const cell = (n,l)=>`<div class="bg-carbon border border-white/10 rounded-xl py-2">
+      <div class="font-display text-2xl leading-none">${String(n).padStart(2,'0')}</div>
+      <div class="text-[9px] tracking-widest text-muted">${l}</div>
+    </div>`;
+    el.innerHTML = cell(d,'DIAS')+cell(h,'HORAS')+cell(mn,'MIN')+cell(s,'SEG');
+  }
+  tick(); clearInterval(window.__cd); window.__cd = setInterval(tick,1000);
+}
+
+/* ---------------- 7. BOLÃO SCREEN ---------------- */
+function renderBolao(){
+  const screen = $('[data-screen="bolao"]');
+  const groupMatches = MATCHES.filter(m=>m.stage==='G');
+  const upcoming = MATCHES.filter(m=>matchStatus(m)==='upcoming');
+  const finals = MATCHES.filter(m=>matchStatus(m)==='final');
+  const live = MATCHES.filter(m=>matchStatus(m)==='live');
+
+  screen.innerHTML = `
+    <div class="flex items-center justify-between">
+      <h1 class="font-display text-3xl tracking-wider">BOLÃO</h1>
+      <div class="text-xs text-muted">Palpite até 30min antes do jogo</div>
+    </div>
+
+    <!-- Longo prazo card -->
+    <div class="card-elev p-4 relative overflow-hidden">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-[10px] tracking-[0.25em] uppercase text-gold">Longo Prazo</div>
+          <div class="font-display text-xl leading-tight mt-1">CAMPEÃO · VICE · ARTILHEIRO · SURPRESA</div>
+          <div class="text-xs text-muted mt-1">Bônus de até <span class="text-gold font-bold">+500 pts</span></div>
+        </div>
+        <button class="px-3 py-2 rounded-xl ${state.longterm.locked?'btn-ghost':'btn-primary'} text-xs font-bold" onclick="openLongTermModal()">
+          ${state.longterm.locked?'🔒 Enviado':'PALPITAR'}
+        </button>
+      </div>
+      ${state.longterm.locked ? `
+        <div class="mt-3 grid grid-cols-4 gap-2 text-center text-xs">
+          ${[
+            ['Campeão', state.longterm.champion],
+            ['Vice', state.longterm.vice],
+            ['Artilheiro', state.longterm.topScorer],
+            ['Surpresa', state.longterm.surprise]
+          ].map(([k,v])=>{
+            const t = teamById(v); const p = PLAYERS.find(p=>p.id===v);
+            return `<div class="bg-white/5 rounded-xl py-2 px-1 border border-white/5">
+              <div class="text-[9px] text-muted tracking-wider">${k.toUpperCase()}</div>
+              <div class="text-lg mt-1">${t?t.flag:(p?'⚽':'—')}</div>
+              <div class="text-[10px] font-bold truncate">${t?t.name:(p?p.name:'—')}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      `:''}
+    </div>
+
+    <!-- Grupos navegação -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">12 GRUPOS · COPA 2026</h2>
+        <span class="text-[10px] text-muted">toque pra ver</span>
+      </div>
+      <div class="grid grid-cols-4 gap-2">
+        ${GROUP_LETTERS.map(L=>{
+          const teams = teamsByGroup(L);
+          return `
+            <button onclick="openGroupModal('${L}')" class="card p-2 text-left active:scale-95 transition">
+              <div class="flex items-center justify-between mb-1">
+                <div class="font-display text-base leading-none">GRUPO ${L}</div>
+                <div class="text-[9px] text-muted">${teams.length}</div>
+              </div>
+              <div class="flex -space-x-1">
+                ${teams.map(t=>`<div class="text-base" title="${t.name}">${t.flag}</div>`).join('')}
+              </div>
+            </button>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">PARTIDAS</h2>
+        <span class="text-[10px] text-muted">${MATCHES.length} jogos</span>
+      </div>
+      <div class="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-2">
+        ${[
+          {k:'all',     label:'Todos',         n:MATCHES.length},
+          {k:'upcoming',label:'Próximos',      n:upcoming.length},
+          {k:'live',    label:'Ao vivo',       n:live.length},
+          {k:'final',   label:'Encerrados',    n:finals.length},
+          {k:'groups',  label:'Fase de grupos',n:groupMatches.length},
+          {k:'ko',      label:'Mata-mata',     n:MATCHES.length-groupMatches.length},
+          {k:'mine',    label:'Meus palpites', n:Object.keys(state.predictions).length},
+        ].map(f=>`
+          <button data-filter="${f.k}" class="filter-tab shrink-0 px-3 py-1.5 rounded-full chip text-xs font-bold ${f.k==='upcoming'?'!bg-neon !text-black !border-neon':''}">
+            ${f.label} <span class="opacity-60">${f.n}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <div id="match-list" class="space-y-2">${upcoming.slice(0,12).map(matchCard).join('')}</div>
+    ${upcoming.length>12?`<button id="load-more" class="w-full mt-3 py-3 rounded-2xl btn-ghost text-sm font-bold">Carregar mais (${upcoming.length-12})</button>`:''}
+  `;
+
+  let currentList = upcoming.slice(0,12);
+  let currentFilter = 'upcoming';
+
+  $$('.filter-tab', screen).forEach(b=>{
+    b.addEventListener('click', ()=>{
+      $$('.filter-tab', screen).forEach(x=>x.classList.remove('!bg-neon','!text-black','!border-neon'));
+      b.classList.add('!bg-neon','!text-black','!border-neon');
+      const f = b.dataset.filter;
+      currentFilter = f;
+      let list = MATCHES;
+      if(f==='upcoming') list = upcoming;
+      if(f==='live')     list = live;
+      if(f==='final')    list = finals;
+      if(f==='groups')   list = groupMatches;
+      if(f==='ko')       list = MATCHES.filter(m=>m.stage!=='G');
+      if(f==='mine')     list = MATCHES.filter(m=>state.predictions[m.id]);
+      currentList = list;
+      $('#match-list').innerHTML = list.length? list.map(matchCard).join('') :
+        `<div class="card p-6 text-center text-muted text-sm">Nada por aqui ainda. 🍿</div>`;
+    });
+  });
+}
+
+/* Modal com TABELA do grupo (jogos + classificação simulada) */
+function openGroupModal(letter){
+  const teams = teamsByGroup(letter);
+  const matches = MATCHES.filter(m=>m.stage==='G' && m.group===letter);
+  // Classificação pré-Copa: tudo zero
+  const standings = teams.map(t=>({ ...t, P:0, V:0, E:0, D:0, GP:0, GC:0, pts:0 }));
+
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-neon">FASE DE GRUPOS · COPA 2026</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-3xl mb-1">GRUPO ${letter}</div>
+
+      <!-- Classificação -->
+      <div class="text-[10px] tracking-widest text-muted mt-4 mb-2">CLASSIFICAÇÃO</div>
+      <div class="card overflow-hidden">
+        <table class="w-full text-xs">
+          <thead class="bg-white/5 text-muted">
+            <tr>
+              <th class="text-left p-2 font-semibold">#</th>
+              <th class="text-left p-2 font-semibold">Seleção</th>
+              <th class="text-center p-2 font-semibold">P</th>
+              <th class="text-center p-2 font-semibold">SG</th>
+              <th class="text-center p-2 font-semibold">Pts</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${standings.map((t,i)=>`
+              <tr class="border-t border-white/5">
+                <td class="p-2 font-display text-muted">${i+1}</td>
+                <td class="p-2"><span class="mr-1">${t.flag}</span>${t.name}</td>
+                <td class="text-center p-2">${t.P}</td>
+                <td class="text-center p-2">${t.GP-t.GC}</td>
+                <td class="text-center p-2 font-bold text-neon">${t.pts}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="text-[10px] text-muted mt-1 italic">Classificação será atualizada após cada rodada.</div>
+
+      <!-- Jogos do grupo -->
+      <div class="text-[10px] tracking-widest text-muted mt-5 mb-2">PARTIDAS (${matches.length})</div>
+      <div class="space-y-2">${matches.map(matchCard).join('')}</div>
+    </div>
+  `);
+}
+
+/* ============================================================
+   TABELA / CALENDÁRIO NOSTÁLGICO
+   Estilo "tabelinha de jornal" pra preencher placar a caneta.
+   - Calcula classificação automaticamente (V=3, E=1)
+   - Critérios de desempate: Pts > SG > GP > nome
+   - Chave de mata-mata mostra vencedores (calculados ou marcados manualmente)
+   ============================================================ */
+
+/* Calcula classificação a partir dos placares preenchidos pelo usuário */
+function calcStandings(letter){
+  const teams = teamsByGroup(letter);
+  const stats = {};
+  teams.forEach(t => { stats[t.id] = { ...t, P:0, V:0, E:0, D:0, GP:0, GC:0 }; });
+
+  MATCHES.filter(m => m.stage==='G' && m.group===letter).forEach(m => {
+    const sc = state.userScores[m.id];
+    if(!sc || sc.a==null || sc.b==null) return;
+    const A = stats[m.a], B = stats[m.b];
+    if(!A || !B) return;
+    A.P++; B.P++;
+    A.GP += sc.a; A.GC += sc.b;
+    B.GP += sc.b; B.GC += sc.a;
+    if(sc.a > sc.b){ A.V++; B.D++; }
+    else if(sc.a < sc.b){ A.D++; B.V++; }
+    else { A.E++; B.E++; }
+  });
+
+  const arr = Object.values(stats).map(s => ({
+    ...s, SG: s.GP - s.GC, pts: s.V*3 + s.E
+  }));
+  arr.sort((a,b) => b.pts - a.pts || b.SG - a.SG || b.GP - a.GP || a.name.localeCompare(b.name));
+  return arr;
+}
+
+/* Retorna { firsts, seconds, thirds } com os classificados */
+function getQualifiedAll(){
+  const firsts = {}, seconds = {}, thirds = {};
+  GROUP_LETTERS.forEach(L => {
+    const s = calcStandings(L);
+    firsts[L] = s[0];
+    seconds[L] = s[1];
+    thirds[L] = s[2];
+  });
+  // Top 8 terceiros
+  const top3sorted = GROUP_LETTERS.map(L => ({ L, t: thirds[L] }))
+    .sort((a,b) => b.t.pts - a.t.pts || b.t.SG - a.t.SG || b.t.GP - a.t.GP);
+  return { firsts, seconds, thirds, top8thirds: top3sorted.slice(0,8) };
+}
+
+/* Salva placar preenchido na tabela */
+function setUserScore(matchId, side, value){
+  const v = value === '' ? null : Math.max(0, Math.min(99, parseInt(value)||0));
+  state.userScores[matchId] = state.userScores[matchId] || { a:null, b:null };
+  state.userScores[matchId][side] = v;
+  if(state.userScores[matchId].a==null && state.userScores[matchId].b==null){
+    delete state.userScores[matchId];
+  }
+  saveState();
+  // Atualiza só as classificações da tela sem repintar tudo
+  updateStandingsInPlace();
+  updateBracketInPlace();
+}
+
+/* Atualiza só as tabelinhas de classificação visíveis */
+function updateStandingsInPlace(){
+  GROUP_LETTERS.forEach(L => {
+    const tbody = document.getElementById('tbody-' + L);
+    if(!tbody) return;
+    tbody.innerHTML = renderStandingsRows(L);
+  });
+}
+function updateBracketInPlace(){
+  const wrap = document.getElementById('bracket-wrap');
+  if(wrap) wrap.innerHTML = renderBracket();
+}
+
+function renderStandingsRows(L){
+  const standings = calcStandings(L);
+  return standings.map((t,i) => {
+    const cls = i===0?'q1' : i===1?'q2' : i===2?'q3' : 'qF';
+    return `
+      <tr class="${cls}">
+        <td>${i+1}</td>
+        <td>${t.flag} ${t.name}</td>
+        <td>${t.P}</td>
+        <td>${t.V}</td>
+        <td>${t.E}</td>
+        <td>${t.D}</td>
+        <td>${t.GP}</td>
+        <td>${t.GC}</td>
+        <td>${t.SG>0?'+':''}${t.SG}</td>
+        <td><b>${t.pts}</b></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderGroupBox(L){
+  const matches = MATCHES.filter(m => m.stage==='G' && m.group===L);
+  const teams = teamsByGroup(L);
+  // Cor de "cabeçalho do grupo" (faixa lateral)
+  const stripe = ['#0a7a3e','#1d4ed8','#b8341d','#7c2d12','#5b21b6','#0f766e','#1e3a8a','#9d174d','#b91c1c','#92400e','#15803d','#581c87'][GROUP_LETTERS.indexOf(L)];
+
+  return `
+    <details class="group-box paper p-4 mb-4" ${['A','B','C'].includes(L)?'open':''}>
+      <summary class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="news-h text-3xl" style="border-left:6px solid ${stripe}; padding-left:10px">
+            GRUPO ${L}
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs" style="color:#6b4a1c">${teams.map(t=>t.flag).join('')}</span>
+          <span class="chev text-xl" style="color:#1a0e02">›</span>
+        </div>
+      </summary>
+
+      <!-- CLASSIFICAÇÃO -->
+      <div class="mt-3" style="overflow-x:auto">
+        <table class="tbl-class">
+          <thead>
+            <tr>
+              <th style="width:18px">#</th>
+              <th>SELEÇÃO</th>
+              <th>P</th>
+              <th>V</th>
+              <th>E</th>
+              <th>D</th>
+              <th>GP</th>
+              <th>GC</th>
+              <th>SG</th>
+              <th>PTS</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-${L}">
+            ${renderStandingsRows(L)}
+          </tbody>
+        </table>
+      </div>
+      <div class="text-[9px] mt-2 flex flex-wrap gap-3" style="color:#6b4a1c">
+        <span><span style="display:inline-block;width:10px;height:10px;background:rgba(0,160,80,.55);vertical-align:middle"></span> 1º/2º Classificados</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:rgba(255,180,0,.5);vertical-align:middle"></span> 3º (pode classificar)</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:rgba(180,40,20,.25);vertical-align:middle"></span> Eliminado</span>
+      </div>
+
+      <!-- JOGOS DO GRUPO -->
+      <div class="news-h text-xs mt-4 mb-2" style="letter-spacing:.18em; border-bottom:1.5px solid #1a0e02; padding-bottom:3px">
+        JOGOS · ANOTE O PLACAR
+      </div>
+      <div>
+        ${matches.map(m => {
+          const tA = teamById(m.a), tB = teamById(m.b);
+          const sc = state.userScores[m.id] || { a:'', b:'' };
+          return `
+            <div class="game-row">
+              <div class="home-name">${tA.name} ${tA.flag}</div>
+              <div class="flex items-center gap-1">
+                <input type="number" min="0" max="20" inputmode="numeric" class="score-input"
+                       value="${sc.a==null?'':sc.a}"
+                       oninput="setUserScore('${m.id}','a',this.value)" />
+                <span class="vs-dot">×</span>
+                <input type="number" min="0" max="20" inputmode="numeric" class="score-input"
+                       value="${sc.b==null?'':sc.b}"
+                       oninput="setUserScore('${m.id}','b',this.value)" />
+              </div>
+              <div class="away-name">${tB.flag} ${tB.name}</div>
+            </div>
+            <div class="when text-center" style="margin-top:-2px; margin-bottom:4px">
+              ${fmtDate(m.date)} · ${m.city}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </details>
+  `;
+}
+
+/* ===== CHAVE DO MATA-MATA ===== */
+/* Estrutura simplificada: 16 confrontos -> 8 -> 4 -> 2 -> 1
+   Os 16 jogos de R32 já existem em MATCHES com placeholders.
+   Vamos derivar os "donos" das vagas a partir das classificações + 8 melhores 3os. */
+
+/* Tabela de cruzamentos do R32 (conforme calendário oficial 2026)
+   Cada item: { id da partida, vaga1, vaga2 } */
+const KO_MAPPING = [
+  { id:'r1',  v1:{type:'2nd', group:'A'},   v2:{type:'2nd', group:'B'} },           // Jogo 73
+  { id:'r2',  v1:{type:'1st', group:'C'},   v2:{type:'2nd', group:'F'} },           // Jogo 76
+  { id:'r3',  v1:{type:'1st', group:'E'},   v2:{type:'3rd', pool:['A','B','C','D','F']} }, // Jogo 74
+  { id:'r4',  v1:{type:'1st', group:'F'},   v2:{type:'2nd', group:'C'} },           // Jogo 75
+  { id:'r5',  v1:{type:'2nd', group:'E'},   v2:{type:'2nd', group:'I'} },           // Jogo 78
+  { id:'r6',  v1:{type:'1st', group:'I'},   v2:{type:'3rd', pool:['C','D','F','G','H']} }, // Jogo 77
+  { id:'r7',  v1:{type:'1st', group:'A'},   v2:{type:'3rd', pool:['C','E','F','H','I']} }, // Jogo 79
+  { id:'r8',  v1:{type:'1st', group:'L'},   v2:{type:'3rd', pool:['E','H','I','J','K']} }, // Jogo 80
+  { id:'r9',  v1:{type:'1st', group:'G'},   v2:{type:'3rd', pool:['A','E','H','I','J']} }, // Jogo 82
+  { id:'r10', v1:{type:'1st', group:'D'},   v2:{type:'3rd', pool:['B','E','F','I','J']} }, // Jogo 81
+  { id:'r11', v1:{type:'1st', group:'B'},   v2:{type:'3rd', pool:['E','F','G','I','J']} }, // Jogo 85
+  { id:'r12', v1:{type:'1st', group:'H'},   v2:{type:'2nd', group:'J'} },           // Jogo 84
+  { id:'r13', v1:{type:'2nd', group:'K'},   v2:{type:'2nd', group:'L'} },           // Jogo 83
+  { id:'r14', v1:{type:'2nd', group:'D'},   v2:{type:'2nd', group:'G'} },           // Jogo 88
+  { id:'r15', v1:{type:'1st', group:'J'},   v2:{type:'2nd', group:'H'} },           // Jogo 86
+  { id:'r16', v1:{type:'1st', group:'K'},   v2:{type:'3rd', pool:['D','E','I','J','L']} }, // Jogo 87
+];
+
+/* Resolve a vaga (1st/2nd/3rd) num teamId, se possível */
+function resolveSlot(slot, qual){
+  if(slot.type==='1st'){
+    const t = qual.firsts[slot.group];
+    return t && t.P>0 ? t : null;
+  }
+  if(slot.type==='2nd'){
+    const t = qual.seconds[slot.group];
+    return t && t.P>0 ? t : null;
+  }
+  if(slot.type==='3rd'){
+    // Pega o melhor terceiro entre os top8 cujo grupo está no pool
+    const candidates = qual.top8thirds.filter(x => slot.pool.includes(x.L));
+    return candidates.length ? candidates[0].t : null;
+  }
+  return null;
+}
+
+/* Cruzamentos das oitavas (R16) -> determinados pelo regulamento FIFA 2026 */
+const KO_BRACKET = {
+  // R16 (oitavas, 8 partidas) — cada uma cruza 2 jogos de R32
+  o1: ['r1','r4'],   // V73 x V75
+  o2: ['r3','r6'],   // V74 x V77
+  o3: ['r2','r5'],   // V76 x V78
+  o4: ['r7','r8'],   // V79 x V80
+  o5: ['r13','r12'], // V83 x V84
+  o6: ['r10','r9'],  // V81 x V82
+  o7: ['r15','r14'], // V86 x V88
+  o8: ['r11','r16'], // V85 x V87
+  // QF (quartas)
+  q1: ['o2','o1'],   // V89 x V90
+  q2: ['o5','o6'],   // V93 x V94
+  q3: ['o3','o4'],   // V91 x V92
+  q4: ['o7','o8'],   // V95 x V96 (corrigido: ordem oficial Tabela)
+  // SF
+  s1: ['q1','q2'],
+  s2: ['q3','q4'],
+  // Final
+  f1: ['s1','s2'],
+};
+
+/* Vencedor de um confronto:
+   - Se userScores tem placar e há diferença: vence quem fez mais gol
+   - Senão, se koWinners[matchId] está marcado, usa
+   - Senão, null */
+function winnerOfMatch(matchId, slotsResolved){
+  // Para r* (R32): slots já resolvidos
+  const sc = state.userScores[matchId];
+  const slots = slotsResolved;
+  if(sc && sc.a!=null && sc.b!=null && sc.a!==sc.b && slots && slots.a && slots.b){
+    return sc.a > sc.b ? slots.a : slots.b;
+  }
+  // Manualmente marcado
+  if(state.koWinners[matchId]){
+    return TEAMS.find(t => t.id===state.koWinners[matchId]) || null;
+  }
+  return null;
+}
+
+function renderBracket(){
+  const qual = getQualifiedAll();
+
+  // Resolve R32
+  const r32 = {};
+  KO_MAPPING.forEach(km => {
+    const a = resolveSlot(km.v1, qual);
+    const b = resolveSlot(km.v2, qual);
+    r32[km.id] = { a, b, winner: null, slot1Label: labelSlot(km.v1), slot2Label: labelSlot(km.v2) };
+    r32[km.id].winner = winnerOfMatch(km.id, { a, b });
+  });
+
+  // Resolve R16
+  const r16 = {};
+  Object.keys(KO_BRACKET).filter(k=>k.startsWith('o')).forEach(oid => {
+    const [src1, src2] = KO_BRACKET[oid];
+    const a = r32[src1]?.winner || null;
+    const b = r32[src2]?.winner || null;
+    r16[oid] = { a, b, winner: winnerOfMatch(oid, { a, b }) };
+  });
+  // Resolve QF
+  const qf = {};
+  ['q1','q2','q3','q4'].forEach(qid => {
+    const [s1,s2] = KO_BRACKET[qid];
+    const a = r16[s1]?.winner || null;
+    const b = r16[s2]?.winner || null;
+    qf[qid] = { a, b, winner: winnerOfMatch(qid, { a, b }) };
+  });
+  // Resolve SF
+  const sf = {};
+  ['s1','s2'].forEach(sid => {
+    const [s1,s2] = KO_BRACKET[sid];
+    const a = qf[s1]?.winner || null;
+    const b = qf[s2]?.winner || null;
+    sf[sid] = { a, b, winner: winnerOfMatch(sid, { a, b }) };
+  });
+  // Final
+  const fnA = sf.s1?.winner || null;
+  const fnB = sf.s2?.winner || null;
+  const finalMatch = { a: fnA, b: fnB, winner: winnerOfMatch('f1', { a:fnA, b:fnB }) };
+  const champion = finalMatch.winner;
+
+  /* Renderiza um "match box" da chave */
+  const box = (id, m, fb1='?', fb2='?', big=false) => {
+    const w = m.winner;
+    const aIsWin = w && m.a && w.id===m.a.id;
+    const bIsWin = w && m.b && w.id===m.b.id;
+    const aIsLose = w && m.a && w.id!==m.a.id;
+    const bIsLose = w && m.b && w.id!==m.b.id;
+    const cls1 = aIsWin?'winner':aIsLose?'loser':'';
+    const cls2 = bIsWin?'winner':bIsLose?'loser':'';
+    const t1 = m.a ? `<span class="bk-flag">${m.a.flag}</span><span class="bk-name">${m.a.name}</span>` : `<span class="bk-name" style="color:#888">${fb1}</span>`;
+    const t2 = m.b ? `<span class="bk-flag">${m.b.flag}</span><span class="bk-name">${m.b.name}</span>` : `<span class="bk-name" style="color:#888">${fb2}</span>`;
+    const clickable = m.a && m.b ? `onclick="cycleKoWinner('${id}')" style="cursor:pointer"` : '';
+    return `
+      <div class="bk-match ${big?'bk-final':''}" ${clickable} title="${m.a&&m.b?'Toque para marcar vencedor':''}">
+        <div class="bk-team ${cls1}">${t1}</div>
+        <div class="bk-team ${cls2}">${t2}</div>
+      </div>
+    `;
+  };
+
+  // Champion celebration
+  const champBox = champion
+    ? `<div class="bk-champ-trophy" style="background:linear-gradient(180deg,#ffd60a,#f0a500);border:2px solid #1a0e02;border-radius:8px;margin-top:8px">
+         🏆 ${champion.flag} ${champion.name.toUpperCase()} 🏆
+       </div>`
+    : `<div class="bk-champ-trophy" style="background:rgba(255,255,255,.4);border:2px dashed #1a0e02;border-radius:8px;margin-top:8px">
+         🏆 CAMPEÃO?
+       </div>`;
+
+  return `
+    <div class="bracket-inner">
+      <div class="bk-col">
+        <div class="bk-col-title">16-AVOS</div>
+        ${KO_MAPPING.map(km => box(km.id, r32[km.id], km.v1.type==='3rd'?'3º':km.v1.group, km.v2.type==='3rd'?'3º':km.v2.group)).join('')}
+      </div>
+      <div class="bk-col">
+        <div class="bk-col-title">OITAVAS</div>
+        ${['o1','o2','o3','o4','o5','o6','o7','o8'].map(o => box(o, r16[o])).join('')}
+      </div>
+      <div class="bk-col">
+        <div class="bk-col-title">QUARTAS</div>
+        ${['q1','q2','q3','q4'].map(q => box(q, qf[q])).join('')}
+      </div>
+      <div class="bk-col">
+        <div class="bk-col-title">SEMIS</div>
+        ${['s1','s2'].map(s => box(s, sf[s])).join('')}
+      </div>
+      <div class="bk-col" style="justify-content:center">
+        <div class="bk-col-title">FINAL</div>
+        ${box('f1', finalMatch, '', '', true)}
+        ${champBox}
+      </div>
+    </div>
+  `;
+}
+
+function labelSlot(s){
+  if(s.type==='1st') return '1º '+s.group;
+  if(s.type==='2nd') return '2º '+s.group;
+  return '3º';
+}
+
+/* Ciclo de vencedor manual (toque no card da chave) — só vale quando placar do jogo não decide */
+function cycleKoWinner(matchId){
+  // Descobre os dois competidores resolvidos no momento
+  const qual = getQualifiedAll();
+  let a=null, b=null;
+  // R32
+  const km = KO_MAPPING.find(x => x.id===matchId);
+  if(km){
+    a = resolveSlot(km.v1, qual);
+    b = resolveSlot(km.v2, qual);
+  } else {
+    // R16/QF/SF/F — recalcula recursivamente
+    const recalc = renderBracketResolveOnly();
+    if(recalc[matchId]){ a = recalc[matchId].a; b = recalc[matchId].b; }
+  }
+  if(!a || !b) return;
+
+  // Se o jogo é R32 e já tem placar definindo vencedor, mostra aviso
+  if(km){
+    const sc = state.userScores[matchId];
+    if(sc && sc.a!=null && sc.b!=null && sc.a!==sc.b){
+      toast('Este jogo já tem placar definindo o vencedor.','warn'); return;
+    }
+  }
+
+  const cur = state.koWinners[matchId];
+  let next;
+  if(!cur)         next = a.id;
+  else if(cur===a.id) next = b.id;
+  else             next = null; // limpa
+  if(next) state.koWinners[matchId] = next;
+  else     delete state.koWinners[matchId];
+  saveState();
+  updateBracketInPlace();
+}
+
+/* Versão "só resolve" — sem renderizar, pra uso interno do cycleKoWinner */
+function renderBracketResolveOnly(){
+  const qual = getQualifiedAll();
+  const r32 = {};
+  KO_MAPPING.forEach(km => {
+    const a = resolveSlot(km.v1, qual);
+    const b = resolveSlot(km.v2, qual);
+    r32[km.id] = { a, b, winner: winnerOfMatch(km.id, { a, b }) };
+  });
+  const r16 = {};
+  ['o1','o2','o3','o4','o5','o6','o7','o8'].forEach(oid => {
+    const [s1,s2] = KO_BRACKET[oid];
+    const a = r32[s1]?.winner||null, b = r32[s2]?.winner||null;
+    r16[oid] = { a, b, winner: winnerOfMatch(oid, { a, b }) };
+  });
+  const qf = {};
+  ['q1','q2','q3','q4'].forEach(qid => {
+    const [s1,s2] = KO_BRACKET[qid];
+    const a = r16[s1]?.winner||null, b = r16[s2]?.winner||null;
+    qf[qid] = { a, b, winner: winnerOfMatch(qid, { a, b }) };
+  });
+  const sf = {};
+  ['s1','s2'].forEach(sid => {
+    const [s1,s2] = KO_BRACKET[sid];
+    const a = qf[s1]?.winner||null, b = qf[s2]?.winner||null;
+    sf[sid] = { a, b, winner: winnerOfMatch(sid, { a, b }) };
+  });
+  const f1 = { a: sf.s1?.winner||null, b: sf.s2?.winner||null };
+  f1.winner = winnerOfMatch('f1', f1);
+  return { ...r32, ...r16, ...qf, ...sf, f1 };
+}
+
+/* Limpar a tabela inteira */
+function confirmClearTable(){
+  openModal(`
+    <div class="px-5 pt-5 pb-8 text-center">
+      <div class="text-5xl mb-3">📋</div>
+      <div class="font-display text-2xl mb-2">LIMPAR TABELA?</div>
+      <div class="text-sm text-muted mb-5">Todos os placares e marcações de mata-mata serão apagados. Sua jornada do bolão (palpites e pontos) <b>não</b> é afetada.</div>
+      <div class="flex gap-2">
+        <button onclick="closeModal()" class="flex-1 py-3 rounded-2xl btn-ghost font-bold">Cancelar</button>
+        <button onclick="clearTabela()" class="flex-1 py-3 rounded-2xl bg-cherry text-white font-bold">Limpar</button>
+      </div>
+    </div>
+  `);
+}
+function clearTabela(){
+  state.userScores = {};
+  state.koWinners = {};
+  saveState(); closeModal(); renderTabela();
+  toast('Tabela limpa. Hora de recomeçar! 🇧🇷','ok');
+}
+
+/* Auto-preencher com resultados aleatórios (simulação) */
+function autoFillTabela(){
+  MATCHES.filter(m => m.stage==='G').forEach(m => {
+    const a = randInt(0,4), b = randInt(0,4);
+    state.userScores[m.id] = { a, b };
+  });
+  saveState(); renderTabela(); confetti();
+  toast('🎲 Tabela simulada! Veja a chave atualizada.','ok');
+}
+
+/* RENDER TABELA SCREEN */
+function renderTabela(){
+  const screen = $('[data-screen="tabela"]');
+  const filled = Object.keys(state.userScores).length;
+  const groupTotal = MATCHES.filter(m=>m.stage==='G').length;
+  const pct = Math.round(filled/groupTotal*100);
+
+  screen.innerHTML = `
+    <!-- Header newspaper -->
+    <div class="paper p-4">
+      <div class="flex items-center justify-between mb-1">
+        <span class="news-stamp text-xs">EDIÇÃO ESPECIAL</span>
+        <span class="text-[10px]" style="color:#6b4a1c">11 JUN — 19 JUL · 2026</span>
+      </div>
+      <div class="news-h text-4xl leading-none mt-1">A TABELINHA</div>
+      <div class="news-h text-xl leading-tight mt-1" style="color:#b8341d">DA COPA 2026 🇺🇸 🇨🇦 🇲🇽</div>
+      <div class="text-xs mt-2" style="color:#3a2a12">
+        Anote os placares à medida que os jogos rolam. A classificação e o mata-mata se atualizam sozinhos — igual nos anos 90, só que sem caneta vazando no bolso. 🖊️
+      </div>
+      <!-- Progress -->
+      <div class="mt-3 flex items-center gap-2">
+        <div class="flex-1 h-2 rounded-full" style="background:rgba(80,40,10,.2)">
+          <div class="h-full rounded-full" style="width:${pct}%; background:linear-gradient(90deg,#0a7a3e,#ffd60a,#b8341d)"></div>
+        </div>
+        <span class="text-[10px] font-bold" style="color:#1a0e02">${filled}/${groupTotal}</span>
+      </div>
+      <div class="flex gap-2 mt-3">
+        <button onclick="autoFillTabela()" class="flex-1 py-2 rounded-xl text-xs font-bold"
+                style="background:#1a0e02;color:#f4e9cf;border:1px solid #1a0e02">
+          🎲 SIMULAR
+        </button>
+        <button onclick="confirmClearTable()" class="flex-1 py-2 rounded-xl text-xs font-bold"
+                style="background:transparent;color:#b8341d;border:1.5px solid #b8341d">
+          ↻ LIMPAR
+        </button>
+      </div>
+    </div>
+
+    <!-- Grupos -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">FASE DE GRUPOS</h2>
+        <button id="toggle-all" class="text-xs text-neon font-bold">Expandir tudo</button>
+      </div>
+      <div id="groups-list">
+        ${GROUP_LETTERS.map(renderGroupBox).join('')}
+      </div>
+    </div>
+
+    <!-- Mata-mata -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">CHAVE DO MATA-MATA</h2>
+        <span class="text-[10px] text-muted">arraste para o lado</span>
+      </div>
+      <div class="bracket">
+        <div id="bracket-wrap">${renderBracket()}</div>
+      </div>
+      <div class="text-[10px] text-muted mt-2 text-center italic">
+        Toque em um confronto para marcar o vencedor (quando não houver placar definindo).
+      </div>
+    </div>
+
+    <!-- Final calendar info -->
+    <div class="paper p-4 text-center">
+      <div class="news-stamp text-[10px] mb-2">FINAL DA COPA</div>
+      <div class="news-h text-2xl">19 DE JULHO DE 2026</div>
+      <div class="text-xs mt-1" style="color:#3a2a12">MetLife Stadium · Nova Jersey · 16h (Brasília)</div>
+    </div>
+  `;
+
+  // Toggle all groups
+  let allOpen = false;
+  $('#toggle-all').addEventListener('click', () => {
+    allOpen = !allOpen;
+    $$('details.group-box').forEach(d => { d.open = allOpen; });
+    $('#toggle-all').textContent = allOpen ? 'Recolher tudo' : 'Expandir tudo';
+  });
+}
+
+/* Match detail (with reactions) */
+function openMatchDetail(id){
+  const m = MATCHES.find(x=>x.id===id); if(!m) return;
+  const tA = teamById(m.a), tB = teamById(m.b);
+  const isPlaceholder = !tA || !tB;
+  const reactions = state.reactions[id] || [];
+  const pal = state.predictions[id];
+  const status = matchStatus(m);
+  const flagA = tA? tA.flag : '⚽', nameA = tA? tA.name : 'A definir';
+  const flagB = tB? tB.flag : '⚽', nameB = tB? tB.name : 'A definir';
+
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-muted">${matchStageLabel(m)} ${m.city?'· '+m.city:''}</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="flex items-center justify-around py-4">
+        <div class="text-center">
+          <div class="text-5xl">${flagA}</div>
+          <div class="text-sm mt-2 font-bold">${nameA}</div>
+        </div>
+        <div class="text-center">
+          ${status==='upcoming'
+            ? `<div class="font-display text-5xl">VS</div><div class="text-xs text-muted mt-2">${fmtDate(m.date)}</div>`
+            : (m.score? `<div class="font-display text-5xl">${m.score.a} <span class="text-muted text-2xl">·</span> ${m.score.b}</div>
+               <div class="text-xs ${status==='live'?'text-cherry':'text-muted'} mt-2 font-bold">${status==='live'?`⚡ ${matchMinute(m)}ʹ`:'FIM DE JOGO'}</div>`
+              : `<div class="font-display text-3xl text-cherry">EM JOGO</div><div class="text-xs text-cherry mt-2 font-bold">⚡ ${matchMinute(m)}ʹ</div>`)
+          }
+        </div>
+        <div class="text-center">
+          <div class="text-5xl">${flagB}</div>
+          <div class="text-sm mt-2 font-bold">${nameB}</div>
+        </div>
+      </div>
+
+      ${isPlaceholder?`
+        <div class="card p-3 mb-3 text-center">
+          <div class="text-[10px] text-muted tracking-widest">CONFRONTO</div>
+          <div class="text-sm mt-1 italic">${m.placeholder||'A definir após fase anterior'}</div>
+        </div>`:''}
+
+      ${pal?`
+        <div class="card p-3 mb-3">
+          <div class="text-[10px] text-muted tracking-widest">SEU PALPITE</div>
+          <div class="font-display text-3xl mt-1">${pal.a} <span class="text-muted">·</span> ${pal.b}</div>
+        </div>`:''}
+
+      ${(status==='upcoming' && !isPlaceholder)?`
+        <button class="btn-primary w-full py-3 rounded-2xl font-bold mb-3" onclick="openPredictModal('${m.id}')">
+          ${pal?'EDITAR PALPITE':'FAZER PALPITE'}
+        </button>`:''}
+
+      <div class="text-[10px] tracking-widest text-muted mb-2">REAÇÕES</div>
+      <div class="flex flex-wrap gap-2 mb-3">
+        ${REACTIONS.map(r=>{
+          const count = reactions.filter(x=>x===r).length;
+          return `<button onclick="addReaction('${id}','${r}')" class="chip px-3 py-1.5 text-sm">
+            ${r}${count?` <span class="text-muted text-xs ml-1">${count}</span>`:''}
+          </button>`;
+        }).join('')}
+      </div>
+
+      <div class="text-[10px] tracking-widest text-muted mb-2">O QUE ESTÃO DIZENDO</div>
+      <div class="space-y-2">
+        ${(reactions.length? MOCK_FRIENDS.slice(0,3).map((f,i)=>`
+          <div class="flex items-start gap-2 card p-3">
+            <div class="w-8 h-8 rounded-full bg-carbon border border-white/10 grid place-items-center">${f.avatar}</div>
+            <div>
+              <div class="text-xs font-bold">${f.name} <span class="text-muted font-normal">· ${timeAgo(Date.now()-i*60000*7)}</span></div>
+              <div class="text-sm">${randPick(MEME_PHRASES)}</div>
+            </div>
+          </div>
+        `).join(''):'<div class="text-sm text-muted">Seja o primeiro a reagir.</div>')}
+      </div>
+    </div>
+  `);
+}
+
+function addReaction(matchId, emoji){
+  state.reactions[matchId] = state.reactions[matchId]||[];
+  state.reactions[matchId].push(emoji);
+  saveState();
+  openMatchDetail(matchId);
+  toast(`Reação ${emoji} enviada!`);
+}
+
+/* ---------------- 8. PREDICT MODAL ---------------- */
+function openPredictModal(matchId){
+  const m = MATCHES.find(x=>x.id===matchId); if(!m) return;
+  const tA = teamById(m.a), tB = teamById(m.b);
+  const existing = state.predictions[matchId] || { a:0, b:0 };
+
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-muted">${matchStageLabel(m)} · ${fmtDate(m.date)}${m.city?' · '+m.city:''}</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-2xl mb-1">SEU PALPITE</div>
+      <div class="text-muted text-sm mb-5">Acerte o placar exato e ganhe <span class="text-neon font-bold">+10 pontos</span>.</div>
+
+      <div class="card-elev p-5">
+        <div class="grid grid-cols-3 items-center gap-2">
+          <div class="text-center">
+            <div class="text-5xl">${tA.flag}</div>
+            <div class="text-xs mt-2 font-bold">${tA.name}</div>
+          </div>
+          <div class="text-center text-muted font-display text-4xl">x</div>
+          <div class="text-center">
+            <div class="text-5xl">${tB.flag}</div>
+            <div class="text-xs mt-2 font-bold">${tB.name}</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 items-center gap-2 mt-5">
+          ${scoreStepper('a', existing.a)}
+          <div class="text-center font-display text-3xl text-muted">·</div>
+          ${scoreStepper('b', existing.b)}
+        </div>
+      </div>
+
+      <div class="mt-4 grid grid-cols-3 gap-2 text-center text-[10px] text-muted">
+        <div class="card p-2"><div class="text-bone font-display text-lg">10</div> Placar exato</div>
+        <div class="card p-2"><div class="text-bone font-display text-lg">7</div> Saldo +1</div>
+        <div class="card p-2"><div class="text-bone font-display text-lg">5</div> Só vencedor</div>
+      </div>
+
+      <button id="confirm-predict" class="btn-primary w-full py-3.5 rounded-2xl font-display tracking-widest text-base mt-5">
+        CONFIRMAR PALPITE
+      </button>
+      ${state.predictions[matchId]?`
+        <button class="w-full py-3 rounded-2xl btn-ghost text-cherry font-bold text-sm mt-2" onclick="removePredict('${matchId}')">
+          Excluir palpite
+        </button>`:''}
+    </div>
+  `);
+
+  // wiring
+  let a = existing.a, b = existing.b;
+  const upd = ()=>{ a = parseInt($('#sc-a').textContent)||0; b = parseInt($('#sc-b').textContent)||0; };
+  $$('[data-step]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const side = btn.dataset.side; const dir = parseInt(btn.dataset.step);
+      const el = $('#sc-'+side);
+      let v = parseInt(el.textContent)+dir;
+      v = Math.max(0, Math.min(15, v));
+      el.textContent = v; el.classList.add('animate-pop'); setTimeout(()=>el.classList.remove('animate-pop'),300);
+    });
+  });
+  $('#confirm-predict').addEventListener('click', ()=>{
+    upd();
+    const prediction = { a, b, ts: Date.now() };
+    state.predictions[matchId] = prediction;
+    saveState();
+    // Sincroniza com a nuvem (Firebase real ou no-op no MVP)
+    CloudSync.publishPrediction(matchId, prediction);
+    closeModal();
+    confetti();
+    toast(`✅ Palpite registrado: <span class="font-display">${a} x ${b}</span>`,'ok');
+    renderHUD(); refreshActiveScreen();
+  });
+}
+
+function scoreStepper(side, value){
+  return `
+    <div class="text-center">
+      <div class="flex items-center justify-center gap-2">
+        <button data-step="-1" data-side="${side}" class="w-10 h-10 rounded-full btn-ghost text-xl font-bold">−</button>
+        <div id="sc-${side}" class="font-display text-6xl w-20">${value}</div>
+        <button data-step="1" data-side="${side}" class="w-10 h-10 rounded-full btn-ghost text-xl font-bold">+</button>
+      </div>
+    </div>
+  `;
+}
+
+function removePredict(id){
+  delete state.predictions[id]; saveState(); closeModal();
+  toast('Palpite excluído.','warn'); refreshActiveScreen();
+}
+
+/* ---------------- 9. LONG-TERM MODAL ---------------- */
+function openLongTermModal(){
+  const lt = state.longterm;
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-gold">BOLÃO · LONGO PRAZO</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-2xl leading-tight">QUEM LEVA A <span class="shimmer-text">TAÇA</span>?</div>
+      <div class="text-sm text-muted mb-5 mt-1">Bônus por acerto: <span class="text-gold font-bold">Campeão +250</span> · Vice +120 · Artilheiro +150 · Surpresa +100</div>
+
+      <div class="space-y-3">
+        ${ltSection('champion','🏆 CAMPEÃO','team')}
+        ${ltSection('vice','🥈 VICE-CAMPEÃO','team')}
+        ${ltSection('topScorer','⚽ ARTILHEIRO','player')}
+        ${ltSection('surprise','🎲 SELEÇÃO SURPRESA','team')}
+      </div>
+
+      <button id="confirm-lt" class="btn-primary w-full py-3.5 rounded-2xl font-display tracking-widest text-base mt-5">
+        ${lt.locked?'ATUALIZAR':'CONFIRMAR'} PALPITE
+      </button>
+    </div>
+  `);
+}
+
+function ltSection(key, label, kind){
+  const cur = state.longterm[key];
+  return `
+    <div>
+      <div class="text-[10px] tracking-widest text-muted mb-2">${label}</div>
+      <div class="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5 pb-1">
+        ${ (kind==='team'?TEAMS: PLAYERS.filter(p=>p.team!=='—')) .map(item=>{
+          const id = item.id;
+          const isSel = cur===id;
+          if(kind==='team'){
+            return `<button onclick="setLT('${key}','${id}')" class="shrink-0 w-20 p-2 rounded-2xl ${isSel?'bg-neon/15 border-2 border-neon shadow-glow':'card'} text-center">
+              <div class="text-3xl">${item.flag}</div>
+              <div class="text-[10px] mt-1 font-bold truncate">${item.name}</div>
+            </button>`;
+          } else {
+            const t = teamById(item.team);
+            return `<button onclick="setLT('${key}','${id}')" class="shrink-0 w-28 p-2 rounded-2xl ${isSel?'bg-neon/15 border-2 border-neon shadow-glow':'card'} text-left">
+              <div class="flex items-center gap-1 mb-1">
+                <span>${t?t.flag:'⚽'}</span>
+                <span class="text-[9px] text-muted">${item.odds}x</span>
+              </div>
+              <div class="text-xs font-bold leading-tight">${item.name}</div>
+            </button>`;
+          }
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function setLT(key, value){
+  state.longterm[key] = value;
+  saveState();
+  openLongTermModal(); // re-render with selection
+  toast('✨ Atualizado.');
+  // wire confirm again
+}
+
+// confirm long term — delegated via document
+document.addEventListener('click', e=>{
+  if(e.target && e.target.id==='confirm-lt'){
+    const lt = state.longterm;
+    if(!lt.champion||!lt.vice||!lt.topScorer||!lt.surprise){
+      toast('Escolha os 4 itens antes de confirmar.','warn'); return;
+    }
+    if(lt.champion===lt.vice){ toast('Campeão e vice precisam ser diferentes.','err'); return; }
+    state.longterm.locked = true;
+    saveState(); closeModal(); confetti();
+    toast('🏆 Palpite de longo prazo registrado!','ok');
+    refreshActiveScreen();
+  }
+});
+
+/* ---------------- 10. GRUPOS ---------------- */
+function renderGrupos(){
+  const screen = $('[data-screen="grupos"]');
+  const groups = state.groups;
+
+  screen.innerHTML = `
+    <div class="flex items-center justify-between">
+      <h1 class="font-display text-3xl tracking-wider">GRUPOS</h1>
+      <div class="flex gap-2">
+        <button class="btn-ghost px-3 py-2 rounded-xl text-xs font-bold" onclick="openJoinGroupModal()">🔗 ENTRAR</button>
+        <button class="btn-primary px-3 py-2 rounded-xl text-xs font-bold" onclick="openCreateGroupModal()">+ NOVO</button>
+      </div>
+    </div>
+    <div class="text-sm text-muted">Crie um grupo e compartilhe o <span class="text-neon font-bold">código</span> com seus amigos — eles entram no app deles igual no Cartola.</div>
+
+    <!-- Banner explicativo sobre sync -->
+    <div class="card p-3 flex items-start gap-3" style="background:linear-gradient(135deg, rgba(0,255,163,.06), rgba(0,229,255,.04)); border:1px solid rgba(0,255,163,.18)">
+      <div class="text-2xl">📡</div>
+      <div class="flex-1">
+        <div class="text-xs font-bold text-neon">SINCRONIZAÇÃO ENTRE AMIGOS</div>
+        <div class="text-[11px] text-muted mt-1 leading-snug">
+          No modo atual (offline/MVP) os palpites ficam no seu celular. Quando o Firebase for ativado, cada amigo que entrar com o código vê o ranking em tempo real, igual Cartola.
+          <button onclick="openCloudInfoModal()" class="text-cyan font-bold ml-1">como ativar →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      ${groups.map(g=>{
+        const ranking = buildGroupRanking(g);
+        const meRank = ranking.findIndex(x=>x.id==='me')+1;
+        const selected = g.id===state.selectedGroupId;
+        const code = g.code || 'BR-XXXX';
+        return `
+          <div class="card-elev p-4 ${selected?'border-neon/40':''}">
+            <div class="flex items-center gap-3">
+              <div class="w-14 h-14 rounded-2xl grid place-items-center text-3xl border border-white/10" style="background:linear-gradient(135deg, ${g.color}30, transparent)">
+                ${g.emoji}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-display text-xl leading-tight truncate">${g.name}</div>
+                <div class="text-xs text-muted">${g.members.length} membros · você é o ${meRank}º</div>
+              </div>
+              <button onclick="selectGroup('${g.id}')" class="px-3 py-1.5 rounded-full text-[11px] font-bold ${selected?'bg-neon text-black':'btn-ghost'}">
+                ${selected?'★ Ativo':'Ativar'}
+              </button>
+            </div>
+
+            <!-- Group code (shareable) -->
+            <div class="mt-3 flex items-center gap-2 p-2.5 rounded-xl" style="background:rgba(0,255,163,.06); border:1px dashed rgba(0,255,163,.35)">
+              <div class="text-[9px] text-muted tracking-widest leading-none">CÓDIGO DO GRUPO</div>
+              <div class="flex-1 font-display text-lg tracking-widest text-neon text-center">${code}</div>
+              <button onclick="copyCode('${code}')" class="px-2 py-1.5 rounded-lg btn-ghost text-[10px] font-bold">📋</button>
+              <button onclick="shareCode('${code}','${g.name.replace(/'/g,'')}')" class="px-2 py-1.5 rounded-lg btn-ghost text-[10px] font-bold">📤</button>
+            </div>
+
+            <div class="mt-3 space-y-1.5">
+              ${ranking.slice(0,5).map((u,i)=>`
+                <div class="flex items-center gap-3 px-2 py-2 rounded-xl ${u.id==='me'?'bg-neon/5 border border-neon/20':''}">
+                  <div class="w-5 font-display text-base text-center ${i===0?'text-gold':i===1?'text-bone':i===2?'text-cherry':'text-muted'}">${i+1}</div>
+                  <div class="w-8 h-8 rounded-full bg-carbon grid place-items-center text-base border border-white/10">${u.avatar}</div>
+                  <div class="flex-1 truncate text-sm font-semibold ${u.id==='me'?'text-neon':''}">${u.name}${u.id==='me'?' (você)':''}</div>
+                  ${u.title?`<div class="text-[9px] text-muted italic">${u.title}</div>`:''}
+                  <div class="font-display text-lg">${u.points}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="flex items-center gap-2 mt-4">
+              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="openAddFriendModal('${g.id}')">➕ Amigos</button>
+              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="openRecordGuessModal('${g.id}')">📝 Palpites</button>
+              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="openShareModal('group','${g.id}')">📤 Card</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <button class="py-4 rounded-2xl card text-sm text-muted font-bold border-dashed" onclick="openCreateGroupModal()">
+        + Criar grupo
+      </button>
+      <button class="py-4 rounded-2xl card text-sm text-muted font-bold border-dashed" onclick="openJoinGroupModal()">
+        🔗 Entrar com código
+      </button>
+    </div>
+  `;
+}
+
+function buildGroupRanking(g){
+  const list = g.members.map(uid=>{
+    if(uid==='me') return { id:'me', name:state.user.name, avatar:state.user.avatar, points:state.user.points, title: state.user.titles[0] };
+    const f = MOCK_FRIENDS.find(x=>x.id===uid) || { id:uid, name:'Amigo', avatar:'🙂' };
+    return { ...f, points: randIntSeed(uid,5,40), title: MEME_TITLES[Math.abs(uid.charCodeAt(0))%MEME_TITLES.length] };
+  });
+  list.sort((a,b)=>b.points-a.points);
+  return list;
+}
+
+function selectGroup(id){
+  state.selectedGroupId = id; saveState(); renderHUD(); renderGrupos();
+  toast('Grupo ativo selecionado.');
+}
+
+/* CREATE GROUP */
+function openCreateGroupModal(){
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-neon">CRIAR GRUPO</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-2xl mb-4">NOVO GRUPO</div>
+
+      <label class="text-[10px] tracking-widest text-muted">NOME DO GRUPO</label>
+      <input id="g-name" type="text" maxlength="28" placeholder="Ex: Os Boleiros da Firma"
+             class="w-full mt-1 mb-4 px-4 py-3 bg-carbon border border-white/10 rounded-xl text-bone placeholder:text-muted/60 focus:outline-none focus:border-neon" />
+
+      <label class="text-[10px] tracking-widest text-muted">FOTO DO GRUPO (EMOJI)</label>
+      <div class="grid grid-cols-8 gap-2 mt-2 mb-4">
+        ${GROUP_AVATARS.map((e,i)=>`
+          <button data-emoji="${e}" class="emoji-pick aspect-square rounded-xl card text-xl ${i===0?'!border-neon !bg-neon/10':''}">${e}</button>
+        `).join('')}
+      </div>
+
+      <label class="text-[10px] tracking-widest text-muted">COR DE DESTAQUE</label>
+      <div class="flex gap-2 mt-2 mb-4">
+        ${['#00ffa3','#ffd60a','#ff2d87','#00e5ff','#caff33'].map((c,i)=>`
+          <button data-color="${c}" class="color-pick w-10 h-10 rounded-full border-2 ${i===0?'border-white':'border-transparent'}" style="background:${c}"></button>
+        `).join('')}
+      </div>
+
+      <label class="text-[10px] tracking-widest text-muted">CONVIDAR AMIGOS</label>
+      <div class="mt-2 mb-5 max-h-40 overflow-y-auto space-y-1.5">
+        ${MOCK_FRIENDS.map(f=>`
+          <label class="flex items-center gap-3 px-3 py-2 rounded-xl card cursor-pointer">
+            <input type="checkbox" data-friend="${f.id}" class="friend-pick accent-neon w-5 h-5" />
+            <div class="w-8 h-8 rounded-full bg-carbon grid place-items-center border border-white/10">${f.avatar}</div>
+            <div class="flex-1 text-sm font-semibold">${f.name}</div>
+            <div class="text-xs text-muted">${teamById(f.team)?.flag||''}</div>
+          </label>
+        `).join('')}
+      </div>
+
+      <button id="create-group-confirm" class="btn-primary w-full py-3.5 rounded-2xl font-display tracking-widest">
+        CRIAR GRUPO
+      </button>
+    </div>
+  `);
+
+  let chosenEmoji = GROUP_AVATARS[0], chosenColor = '#00ffa3';
+  $$('.emoji-pick').forEach(b=>b.addEventListener('click',()=>{
+    $$('.emoji-pick').forEach(x=>x.classList.remove('!border-neon','!bg-neon/10'));
+    b.classList.add('!border-neon','!bg-neon/10');
+    chosenEmoji = b.dataset.emoji;
+  }));
+  $$('.color-pick').forEach(b=>b.addEventListener('click',()=>{
+    $$('.color-pick').forEach(x=>x.classList.remove('border-white'));
+    $$('.color-pick').forEach(x=>x.classList.add('border-transparent'));
+    b.classList.remove('border-transparent'); b.classList.add('border-white');
+    chosenColor = b.dataset.color;
+  }));
+
+  $('#create-group-confirm').addEventListener('click',()=>{
+    const name = $('#g-name').value.trim() || 'Meu Grupo';
+    const friends = $$('.friend-pick:checked').map(c=>c.dataset.friend);
+    const id = 'g_'+Date.now();
+    const code = generateGroupCode();
+    const newGroup = {
+      id, name, emoji: chosenEmoji, color: chosenColor,
+      members: ['me', ...friends],
+      creator: 'me', code, createdAt: Date.now()
+    };
+    state.groups.unshift(newGroup);
+    state.selectedGroupId = id;
+    saveState();
+    // Push to cloud (no-op no MVP, mas pronto pra Firebase)
+    CloudSync.createGroup(newGroup);
+    closeModal(); confetti();
+    // Mostra tela de sucesso com o código pra compartilhar
+    openGroupCreatedModal(newGroup);
+    renderHUD();
+  });
+}
+
+/* Gera um código curto, fácil de digitar, formato BR-XXXXX */
+function generateGroupCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sem I/O/0/1 pra evitar confusão
+  let code = 'BR-';
+  for(let i=0;i<5;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  // Garante unicidade local
+  if(state.groups.some(g=>g.code===code)) return generateGroupCode();
+  return code;
+}
+
+/* Tela mostrada DEPOIS de criar — destaque pro código compartilhável */
+function openGroupCreatedModal(g){
+  openModal(`
+    <div class="px-5 pt-5 pb-8 text-center">
+      <div class="text-6xl mb-2">${g.emoji}</div>
+      <div class="font-display text-3xl leading-tight">${g.name}</div>
+      <div class="text-sm text-muted mt-1 mb-5">Grupo criado! Agora chame a galera.</div>
+
+      <div class="card-elev p-5 holo">
+        <div class="text-[10px] tracking-widest text-neon mb-2">CÓDIGO DO BOLÃO</div>
+        <div class="font-display text-5xl tracking-[0.25em] text-neon shimmer-text mb-3">${g.code}</div>
+        <div class="text-xs text-muted leading-snug">Seu amigo abre o app → "Entrar" → digita esse código → entra direto no grupo. Igual Cartola.</div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 mt-4">
+        <button onclick="copyCode('${g.code}')" class="py-3 rounded-2xl btn-ghost font-bold text-sm">📋 Copiar código</button>
+        <button onclick="shareCode('${g.code}','${g.name.replace(/'/g,'')}')" class="py-3 rounded-2xl btn-primary font-bold text-sm">📤 WhatsApp</button>
+      </div>
+      <button onclick="closeModal();renderGrupos()" class="w-full mt-3 py-3 rounded-2xl text-sm font-bold text-muted">Pronto</button>
+
+      <div class="mt-5 text-[10px] text-muted leading-snug border-t border-white/10 pt-4">
+        ⚠️ <b>Modo offline (MVP):</b> hoje o código é local. Para sincronizar com amigos de verdade, é só plugar o Firebase.
+        <button onclick="closeModal();openCloudInfoModal()" class="text-cyan font-bold">como funciona →</button>
+      </div>
+    </div>
+  `);
+}
+
+/* Copiar código pra área de transferência */
+function copyCode(code){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(code).then(()=>toast(`📋 Copiado: ${code}`,'ok'));
+  } else {
+    toast('📋 Código: '+code, 'ok');
+  }
+}
+
+/* Compartilhar via Web Share API (abre WhatsApp/etc.) */
+function shareCode(code, groupName){
+  const text = `🏆 BOLÃO DA COPA 2026 — entra no meu grupo "${groupName}"!\n\n📲 Baixa o app BOLÃO BR e usa o código:\n\n${code}\n\nVamos ver quem manda mais no palpite! ⚽🇧🇷`;
+  if(navigator.share){
+    navigator.share({ title:'BOLÃO BR · Copa 2026', text }).catch(()=>{});
+  } else {
+    // Fallback: WhatsApp web
+    const url = 'https://wa.me/?text=' + encodeURIComponent(text);
+    window.open(url, '_blank');
+  }
+}
+
+/* MODAL: Entrar em grupo com código */
+function openJoinGroupModal(){
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-cyan">ENTRAR EM GRUPO</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-3xl leading-tight">DIGITE O <span class="text-neon">CÓDIGO</span></div>
+      <div class="text-sm text-muted mt-1 mb-5">Peça o código do bolão pra quem criou o grupo (formato <span class="text-bone font-bold">BR-XXXXX</span>).</div>
+
+      <div class="card-elev p-5 text-center">
+        <input id="join-code-input" type="text" maxlength="9" placeholder="BR-XXXXX"
+               class="w-full text-center font-display text-4xl tracking-[0.25em] bg-transparent border-none text-neon placeholder:text-muted/40 focus:outline-none"
+               style="text-transform:uppercase" />
+        <div class="text-[10px] text-muted tracking-widest mt-2">use letras e números</div>
+      </div>
+
+      <button id="join-confirm" class="btn-primary w-full py-3.5 rounded-2xl font-display tracking-widest mt-4">
+        🔗 ENTRAR NO GRUPO
+      </button>
+
+      <div class="mt-5 card p-3 text-[11px] text-muted leading-snug">
+        <div class="font-bold text-bone mb-1">Como funciona</div>
+        Quem criou o grupo te manda o código pelo WhatsApp. Você digita aqui e cai no mesmo bolão. A partir daí, cada um palpita no próprio celular e o ranking aparece pra todos.
+        <div class="mt-2 italic">📡 Atualmente em modo offline. Para sincronização real, ative o Firebase no código.</div>
+      </div>
+    </div>
+  `);
+
+  const input = $('#join-code-input');
+  // Auto-format BR-XXXXX
+  input.addEventListener('input', e=>{
+    let v = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g,'');
+    if(v.length===2 && !v.includes('-')) v = v+'-';
+    if(v.length>3 && !v.startsWith('BR-')) v = 'BR-'+v.replace(/-/g,'').slice(0,5);
+    e.target.value = v;
+  });
+  setTimeout(()=>input.focus(), 100);
+
+  $('#join-confirm').addEventListener('click', async ()=>{
+    const code = input.value.trim().toUpperCase();
+    if(!/^BR-[A-Z0-9]{4,6}$/.test(code)){
+      toast('Código inválido. Formato: BR-XXXXX','err');
+      return;
+    }
+    // Já está em algum grupo com esse código?
+    if(state.groups.some(g=>g.code===code)){
+      toast('Você já está nesse grupo.','warn');
+      const g = state.groups.find(g=>g.code===code);
+      state.selectedGroupId = g.id; saveState(); closeModal(); renderGrupos();
+      return;
+    }
+    // Busca no cloud (Firebase real) — no MVP, retorna null e cria stub local
+    const remoteGroup = await CloudSync.findGroupByCode(code);
+    if(remoteGroup){
+      // Adiciona usuário ao grupo na nuvem
+      await CloudSync.joinGroup(remoteGroup.id);
+      state.groups.unshift(remoteGroup);
+      state.selectedGroupId = remoteGroup.id;
+      saveState(); closeModal(); confetti();
+      toast(`🎉 Você entrou em "${remoteGroup.name}"!`,'ok');
+      renderGrupos(); renderHUD();
+    } else {
+      // Modo MVP: simula entrada criando um grupo "espelho" local
+      const id = 'g_join_'+Date.now();
+      const fakeGroup = {
+        id, name:'Grupo ' + code, emoji:'🎯', color:'#00e5ff',
+        members:['me','u1','u2','u3'], creator:'u1', code, createdAt: Date.now(),
+        _localStub: true
+      };
+      state.groups.unshift(fakeGroup);
+      state.selectedGroupId = id;
+      saveState(); closeModal(); confetti();
+      toast(`🔗 Modo offline: grupo simulado criado com código ${code}.`,'warn');
+      // Avisa que é simulação
+      setTimeout(()=>{
+        pushNotif({ type:'warn', title:'📡 Modo offline ativo',
+          body:`Pra ver palpites reais dos amigos, ative o Firebase. Toque em "Grupos" → "como ativar".` });
+      }, 800);
+      renderGrupos(); renderHUD();
+    }
+  });
+}
+
+/* MODAL: como ativar sincronização (Firebase) */
+function openCloudInfoModal(){
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-cyan">SINCRONIZAÇÃO EM TEMPO REAL</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-3xl leading-tight">COMO ATIVAR <span class="text-neon">FIREBASE</span></div>
+      <div class="text-sm text-muted mt-1 mb-4">Pra que cada amigo veja o bolão atualizando ao vivo, igual Cartola.</div>
+
+      <div class="space-y-3 text-sm">
+        <div class="card p-3">
+          <div class="text-[10px] text-neon font-bold tracking-widest mb-1">PASSO 1 · GRÁTIS</div>
+          <div>Criar conta no <span class="text-bone font-bold">console.firebase.google.com</span> e fazer um projeto novo (3 cliques).</div>
+        </div>
+        <div class="card p-3">
+          <div class="text-[10px] text-neon font-bold tracking-widest mb-1">PASSO 2</div>
+          <div>Ativar <span class="text-bone font-bold">Firestore Database</span> (banco) e <span class="text-bone font-bold">Authentication</span> (login).</div>
+        </div>
+        <div class="card p-3">
+          <div class="text-[10px] text-neon font-bold tracking-widest mb-1">PASSO 3</div>
+          <div>Copiar a config do projeto e colar dentro de <code class="text-cyan">window.FIREBASE_CONFIG</code> no código do app.</div>
+        </div>
+        <div class="card p-3">
+          <div class="text-[10px] text-neon font-bold tracking-widest mb-1">PASSO 4</div>
+          <div>Trocar as funções do objeto <code class="text-cyan">CloudSync</code> (já preparadas no código) por chamadas reais ao Firestore.</div>
+        </div>
+      </div>
+
+      <div class="card p-3 mt-4" style="background:rgba(0,229,255,.05); border:1px solid rgba(0,229,255,.2)">
+        <div class="text-[11px] text-cyan font-bold mb-1">📦 ESTRUTURA DE DADOS (Firestore)</div>
+        <pre class="text-[10px] text-muted overflow-x-auto leading-relaxed"><code>collection: groups
+  doc {id}
+    name, emoji, color, code, creator
+    members: [uid1, uid2, ...]
+
+collection: predictions
+  doc {uid}
+    matchId: { a, b, ts }
+
+collection: scores         (placares reais — sync via Cloud Functions)
+  doc {matchId}
+    a, b, status</code></pre>
+      </div>
+
+      <div class="text-[11px] text-muted mt-4 leading-snug">
+        Plano <b>Spark (grátis)</b> do Firebase atende tranquilo até 50 mil leituras/dia — dá pra um bolão entre amigos sem custo. Pra escalar viral, o Blaze é "pague o que usar" e fica em centavos pra milhares de usuários.
+      </div>
+
+      <button onclick="closeModal()" class="btn-primary w-full py-3 rounded-2xl font-display tracking-widest mt-5">
+        ENTENDI
+      </button>
+    </div>
+  `);
+}
+
+/* ADD FRIEND */
+function openAddFriendModal(groupId){
+  const g = state.groups.find(x=>x.id===groupId); if(!g) return;
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-neon">${g.emoji} ${g.name.toUpperCase()}</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-2xl mb-1">ADICIONAR AMIGOS</div>
+      <div class="text-sm text-muted mb-4">Selecione amigos para o grupo. (Sincronização real virá depois com Firebase.)</div>
+
+      <input id="search-friend" type="text" placeholder="🔍 Buscar amigos..."
+             class="w-full mb-4 px-4 py-3 bg-carbon border border-white/10 rounded-xl text-bone placeholder:text-muted/60 focus:outline-none focus:border-neon" />
+
+      <div id="friend-list" class="space-y-1.5 max-h-72 overflow-y-auto">
+        ${MOCK_FRIENDS.map(f=>{
+          const inGroup = g.members.includes(f.id);
+          return `
+          <div data-friend-name="${f.name.toLowerCase()}" class="flex items-center gap-3 px-3 py-2 rounded-xl card">
+            <div class="w-9 h-9 rounded-full bg-carbon grid place-items-center border border-white/10">${f.avatar}</div>
+            <div class="flex-1">
+              <div class="text-sm font-semibold">${f.name}</div>
+              <div class="text-[10px] text-muted">${teamById(f.team)?.flag||''} ${teamById(f.team)?.name||''}</div>
+            </div>
+            <button onclick="toggleFriendInGroup('${groupId}','${f.id}')" class="px-3 py-1.5 rounded-full text-xs font-bold ${inGroup?'btn-ghost text-cherry':'bg-neon text-black'}">
+              ${inGroup?'Remover':'Adicionar'}
+            </button>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div class="mt-4 card p-3">
+        <div class="text-[10px] tracking-widest text-muted">CONVITE MANUAL</div>
+        <input id="manual-name" type="text" placeholder="Nome do amigo"
+               class="w-full mt-2 mb-2 px-3 py-2 bg-carbon border border-white/10 rounded-lg text-sm focus:outline-none focus:border-neon" />
+        <button onclick="addManualFriend('${groupId}')" class="w-full py-2 rounded-lg btn-ghost text-sm font-bold">+ Adicionar manualmente</button>
+      </div>
+    </div>
+  `);
+  $('#search-friend').addEventListener('input', e=>{
+    const q = e.target.value.toLowerCase();
+    $$('#friend-list > div').forEach(row=>{
+      row.style.display = row.dataset.friendName.includes(q)?'flex':'none';
+    });
+  });
+}
+function toggleFriendInGroup(gid, fid){
+  const g = state.groups.find(x=>x.id===gid); if(!g) return;
+  if(g.members.includes(fid)) g.members = g.members.filter(x=>x!==fid);
+  else g.members.push(fid);
+  saveState(); openAddFriendModal(gid); renderGrupos();
+}
+function addManualFriend(gid){
+  const name = $('#manual-name').value.trim(); if(!name){ toast('Digite um nome.','warn'); return; }
+  const g = state.groups.find(x=>x.id===gid); if(!g) return;
+  const id = 'mu_'+Date.now();
+  MOCK_FRIENDS.push({ id, name, avatar:'🙂', team:'BRA' });
+  g.members.push(id); saveState(); openAddFriendModal(gid); renderGrupos();
+  toast(`👋 ${name} adicionado.`,'ok');
+}
+
+/* RECORD GUESS */
+function openRecordGuessModal(groupId){
+  const g = state.groups.find(x=>x.id===groupId); if(!g) return;
+  const upcoming = MATCHES.filter(m=>matchStatus(m)==='upcoming' && m.a && m.b).slice(0,8);
+  const friends = g.members.filter(m=>m!=='me').map(id=>MOCK_FRIENDS.find(f=>f.id===id)||{id,name:'Amigo',avatar:'🙂'});
+
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-neon">${g.emoji} ${g.name.toUpperCase()}</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-2xl mb-1">REGISTRAR PALPITES</div>
+      <div class="text-sm text-muted mb-4">Anote o palpite dos amigos para gerar o ranking automático.</div>
+
+      <label class="text-[10px] tracking-widest text-muted">JOGO</label>
+      <select id="rg-match" class="w-full mt-1 mb-4 px-3 py-3 bg-carbon border border-white/10 rounded-xl text-bone focus:outline-none focus:border-neon">
+        ${upcoming.map(m=>`<option value="${m.id}">${teamById(m.a).flag} ${teamById(m.a).name} x ${teamById(m.b).name} ${teamById(m.b).flag}</option>`).join('')}
+      </select>
+
+      <div class="space-y-2">
+        ${friends.map(f=>`
+          <div class="card p-3 flex items-center gap-2">
+            <div class="w-9 h-9 rounded-full bg-carbon grid place-items-center border border-white/10">${f.avatar}</div>
+            <div class="flex-1 text-sm font-semibold truncate">${f.name}</div>
+            <input type="number" min="0" max="20" data-f="${f.id}" data-side="a" class="rg-input w-12 px-2 py-2 bg-ink border border-white/10 rounded-lg text-center" value="0" />
+            <span class="text-muted">x</span>
+            <input type="number" min="0" max="20" data-f="${f.id}" data-side="b" class="rg-input w-12 px-2 py-2 bg-ink border border-white/10 rounded-lg text-center" value="0" />
+          </div>
+        `).join('')}
+      </div>
+
+      <button id="rg-save" class="btn-primary w-full py-3 rounded-2xl font-display tracking-widest mt-4">SALVAR PALPITES</button>
+    </div>
+  `);
+  $('#rg-save').addEventListener('click',()=>{
+    toast('📝 Palpites dos amigos registrados.','ok'); closeModal();
+  });
+}
+
+/* ---------------- 11. ZOEIRA ---------------- */
+function renderZoeira(){
+  const screen = $('[data-screen="zoeira"]');
+  const phrase = randPick(MEME_PHRASES);
+
+  screen.innerHTML = `
+    <div>
+      <h1 class="font-display text-3xl tracking-wider">ZOEIRA <span class="text-cherry">💀</span></h1>
+      <div class="text-sm text-muted">Espalhe figurinhas, frases e zoeira esportiva.</div>
+    </div>
+
+    <!-- Random phrase generator -->
+    <div class="card-elev p-5 relative overflow-hidden">
+      <div class="text-[10px] tracking-widest text-cherry mb-2">FRASE ALEATÓRIA</div>
+      <div id="zoeira-phrase" class="font-chant text-2xl leading-tight">${phrase}</div>
+      <div class="flex gap-2 mt-4">
+        <button id="new-phrase" class="flex-1 py-3 rounded-xl btn-primary font-bold">🎲 GERAR OUTRA</button>
+        <button id="copy-phrase" class="px-4 py-3 rounded-xl btn-ghost text-sm font-bold">📋 Copiar</button>
+      </div>
+      <div class="absolute -bottom-6 -right-6 text-[100px] opacity-10 select-none">🤡</div>
+    </div>
+
+    <!-- Stickers grid -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">FIGURINHAS</h2>
+        <span class="text-xs text-muted">toque pra enviar</span>
+      </div>
+      <div class="grid grid-cols-4 gap-2">
+        ${['🤡','💀','🐐','🥶','🔥','😂','👑','🙏','🐍','🎰','📉','🚀','🍻','🐺','⚽','🚓'].map((s,i)=>`
+          <button onclick="sendSticker('${s}')" class="aspect-square card text-4xl grid place-items-center active:scale-90 transition" style="animation-delay:${i*30}ms">
+            ${s}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Memes cards -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">CARDS DE ZOEIRA</h2>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        ${[
+          {bg:'from-cherry to-gold',  t:'PÉ FRIO',     s:'Confirmado oficial'},
+          {bg:'from-neon to-cyan',    t:'VIDENTE',     s:'Acertou de novo!'},
+          {bg:'from-gold to-cherry',  t:'TIO DO PAVÊ', s:'Comentarista do grupo'},
+          {bg:'from-cyan to-cherry',  t:'COBRA-CEGA',  s:'Chuta tudo no escuro'},
+          {bg:'from-lime to-neon',    t:'GOAT',        s:'O melhor da firma'},
+          {bg:'from-cherry to-cyan',  t:'CRIMINOSO',   s:'Esse palpite foi crime'},
+        ].map(c=>`
+          <button onclick="openZoeiraCard('${c.t}','${c.s}','${c.bg}')" class="story bg-gradient-to-br ${c.bg} text-left p-4 active:scale-95 transition">
+            <div class="font-chant text-2xl text-black/85 leading-none">${c.t}</div>
+            <div class="text-xs text-black/70 mt-2 font-bold">${c.s}</div>
+            <div class="absolute bottom-3 right-3 text-3xl">${c.t==='GOAT'?'🐐':c.t==='VIDENTE'?'🔮':c.t==='PÉ FRIO'?'🥶':c.t==='COBRA-CEGA'?'🐍':c.t==='CRIMINOSO'?'🚓':'🤡'}</div>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Pós jogo -->
+    <div class="card p-4">
+      <div class="text-[10px] tracking-widest text-muted mb-2">REAÇÕES PÓS-JOGO</div>
+      <div class="space-y-2">
+        ${MOCK_FRIENDS.slice(0,3).map((f,i)=>`
+          <div class="flex items-start gap-2">
+            <div class="w-8 h-8 rounded-full bg-carbon border border-white/10 grid place-items-center">${f.avatar}</div>
+            <div class="flex-1">
+              <div class="text-xs font-bold">${f.name} <span class="text-muted font-normal">· ${timeAgo(Date.now()-i*3600000*2)}</span></div>
+              <div class="text-sm">${MEME_PHRASES[(i*3)%MEME_PHRASES.length]}</div>
+            </div>
+            <button class="text-xs text-muted">${REACTIONS[i]}</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  $('#new-phrase').addEventListener('click', ()=>{
+    const el = $('#zoeira-phrase');
+    el.classList.add('animate-shake');
+    el.textContent = randPick(MEME_PHRASES);
+    setTimeout(()=>el.classList.remove('animate-shake'),500);
+  });
+  $('#copy-phrase').addEventListener('click', ()=>{
+    const txt = $('#zoeira-phrase').textContent;
+    navigator.clipboard?.writeText(txt).then(()=>toast('📋 Frase copiada!'));
+  });
+}
+
+function sendSticker(emoji){
+  toast(`Figurinha ${emoji} enviada para o grupo!`,'ok');
+  // also add as a "reaction" log
+  state.notifications.unshift({
+    id:'n'+Date.now(), type:'meme', title:'😂 Figurinha enviada',
+    body:`Você mandou ${emoji} no grupo.`, ts: Date.now(), read:false
+  });
+  saveState(); renderHUD();
+}
+
+function openZoeiraCard(title, sub, bg){
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-cherry">CARD DE ZOEIRA</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="story bg-gradient-to-br ${bg} p-6 mb-4">
+        <div class="font-chant text-5xl leading-none text-black/85">${title}</div>
+        <div class="text-sm text-black/70 mt-2 font-bold">${sub}</div>
+        <div class="absolute bottom-6 right-6 text-6xl">${title==='GOAT'?'🐐':title==='VIDENTE'?'🔮':title==='PÉ FRIO'?'🥶':title==='COBRA-CEGA'?'🐍':title==='CRIMINOSO'?'🚓':'🤡'}</div>
+        <div class="absolute top-4 right-4 font-display tracking-widest text-xs text-black/60">BOLÃO BR</div>
+      </div>
+      <button onclick="fakeShare('Card de zoeira ${title}')" class="btn-primary w-full py-3 rounded-2xl font-display tracking-widest">
+        📤 COMPARTILHAR
+      </button>
+    </div>
+  `);
+}
+
+/* ---------------- 12. PERFIL ---------------- */
+function renderPerfil(){
+  const screen = $('[data-screen="perfil"]');
+  const u = state.user;
+  const fav = teamById(u.team) || teamById('BRA');
+  const hist = u.history;
+
+  screen.innerHTML = `
+    <!-- Profile header -->
+    <div class="card-elev p-5 holo relative overflow-hidden">
+      <div class="flex items-center gap-4">
+        <button id="avatar-edit" class="w-20 h-20 rounded-full bg-carbon border-2 border-neon grid place-items-center text-4xl shadow-glow">
+          ${u.avatar}
+        </button>
+        <div class="flex-1 min-w-0">
+          <button id="name-edit" class="text-left">
+            <div class="font-display text-2xl leading-tight">${u.name}</div>
+            <div class="text-xs text-muted">Toque para editar</div>
+          </button>
+          <div class="flex items-center gap-1 mt-1">
+            <span class="text-base">${fav.flag}</span>
+            <span class="text-xs font-bold">${fav.name}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="grid grid-cols-3 gap-2 mt-5">
+        <div class="bg-ink/70 rounded-xl py-3 text-center border border-white/5">
+          <div class="font-display text-2xl text-neon">${u.points}</div>
+          <div class="text-[10px] text-muted tracking-widest">PONTOS</div>
+        </div>
+        <div class="bg-ink/70 rounded-xl py-3 text-center border border-white/5">
+          <div class="font-display text-2xl text-gold">${u.correct}</div>
+          <div class="text-[10px] text-muted tracking-widest">ACERTOS</div>
+        </div>
+        <div class="bg-ink/70 rounded-xl py-3 text-center border border-white/5">
+          <div class="font-display text-2xl text-cherry">${u.streak}🔥</div>
+          <div class="text-[10px] text-muted tracking-widest">SEQUÊNCIA</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Títulos engraçados -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">TÍTULOS</h2>
+        <span class="text-xs text-muted">${u.titles.length}/12</span>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        ${MEME_TITLES.map(t=>{
+          const owned = u.titles.includes(t);
+          return `
+            <div class="card p-3 text-center ${owned?'border-neon/40':'opacity-50'}">
+              <div class="text-2xl">${owned?'🏅':'🔒'}</div>
+              <div class="text-[10px] font-bold mt-1 leading-tight">${t}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Estatísticas detalhadas -->
+    <div class="card p-4">
+      <div class="font-display tracking-wider text-xl mb-3">ESTATÍSTICAS</div>
+      ${[
+        ['Placares exatos', 1, 10],
+        ['Vitórias acertadas', 2, 10],
+        ['Empates acertados', 0, 5],
+        ['Goleadas previstas', 1, 4],
+        ['Zebras acertadas', 0, 3],
+      ].map(([k,v,max])=>`
+        <div class="mb-3">
+          <div class="flex justify-between text-xs mb-1"><span class="text-muted">${k}</span><span class="font-bold">${v}/${max}</span></div>
+          <div class="h-1.5 rounded-full bg-white/5 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-neon to-cyan" style="width:${v/max*100}%"></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Histórico -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="font-display tracking-wider text-xl">HISTÓRICO</h2>
+      </div>
+      <div class="space-y-2">
+        ${hist.length? hist.slice().reverse().map(h=>{
+          const m = MATCHES.find(x=>x.id===h.matchId); if(!m) return '';
+          const tA = teamById(m.a), tB = teamById(m.b);
+          return `
+            <div class="card p-3 flex items-center gap-3">
+              <div class="text-2xl">${tA.flag}</div>
+              <div class="flex-1 text-center">
+                <div class="text-xs text-muted">${matchStageLabel(m)}</div>
+                <div class="text-sm">
+                  <span class="font-bold">${h.real.a} x ${h.real.b}</span>
+                  <span class="text-muted ml-1">(palpitou ${h.palpite.a}-${h.palpite.b})</span>
+                </div>
+              </div>
+              <div class="text-2xl">${tB.flag}</div>
+              <div class="font-display text-xl ${h.pts>=7?'text-neon':h.pts>0?'text-gold':'text-cherry'}">${h.pts}</div>
+            </div>
+          `;
+        }).join('') : '<div class="card p-6 text-center text-muted text-sm">Nenhum palpite julgado ainda.</div>'}
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="card p-4">
+      <div class="font-display tracking-wider text-xl mb-3">CONFIGURAÇÕES</div>
+      <div class="space-y-2 text-sm">
+        ${(window.CloudSync && window.CloudSync.isOnline && window.CloudSync.isOnline())? `
+          <div class="p-3 rounded-xl bg-neon/5 border border-neon/30">
+            <div class="text-[10px] text-neon font-bold tracking-widest mb-1">CONECTADO COMO</div>
+            <div class="text-sm font-bold">${window.CloudSync.getUserEmail ? window.CloudSync.getUserEmail() : ''}</div>
+            <div class="text-[10px] text-muted mt-0.5">🟢 Sincronização em tempo real ativa</div>
+          </div>
+          <button class="w-full flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5" onclick="confirmSignOut()">
+            <span>Sair da conta</span>
+            <span class="text-cherry">↪</span>
+          </button>
+        ` : (window.FIREBASE_CONFIG ? '' : `
+          <div class="p-3 rounded-xl" style="background:rgba(0,229,255,.05); border:1px solid rgba(0,229,255,.2)">
+            <div class="text-[10px] text-cyan font-bold tracking-widest mb-1">MODO OFFLINE</div>
+            <div class="text-[11px] text-muted leading-snug">Pra sincronizar com amigos em tempo real, configure o Firebase. Veja o README.md do projeto.</div>
+          </div>
+        `)}
+        <label class="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5">
+          <span>Notificações</span>
+          <input type="checkbox" id="set-notifs" ${state.settings.notifs?'checked':''} class="accent-neon w-5 h-5" />
+        </label>
+        <button class="w-full flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5" onclick="openInstallTip()">
+          <span>Instalar no celular</span>
+          <span class="text-neon">→</span>
+        </button>
+        <button class="w-full flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5 text-cherry" onclick="confirmReset()">
+          <span>Apagar meus dados (este celular)</span>
+          <span>↻</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  $('#avatar-edit').addEventListener('click', openAvatarPicker);
+  $('#name-edit').addEventListener('click', openNamePicker);
+  $('#set-notifs')?.addEventListener('change', e=>{
+    state.settings.notifs = e.target.checked; saveState();
+    toast(e.target.checked?'🔔 Notificações ativadas.':'🔕 Notificações desativadas.');
+  });
+}
+
+function openAvatarPicker(){
+  const emojis = ['🇧🇷','🦁','🐉','🦅','🐺','🐯','🦊','🐐','🦋','🦈','🐲','👑','⚽','🏆','💀','🤡','🐍','🚀','🔥','💎'];
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-neon">AVATAR</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-2xl mb-4">ESCOLHA SEU AVATAR</div>
+      <div class="grid grid-cols-5 gap-2">
+        ${emojis.map(e=>`
+          <button onclick="setAvatar('${e}')" class="aspect-square card text-3xl grid place-items-center active:scale-90">${e}</button>
+        `).join('')}
+      </div>
+      <div class="text-[10px] tracking-widest text-muted mt-5 mb-2">SELEÇÃO FAVORITA</div>
+      <div class="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5">
+        ${TEAMS.map(t=>`
+          <button onclick="setFavTeam('${t.id}')" class="shrink-0 w-16 p-2 rounded-xl ${state.user.team===t.id?'bg-neon/15 border-2 border-neon':'card'} text-center">
+            <div class="text-2xl">${t.flag}</div>
+            <div class="text-[9px] mt-1 font-bold truncate">${t.name}</div>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `);
+}
+function setAvatar(e){ state.user.avatar = e; saveState(); renderHUD(); openAvatarPicker(); toast('✨ Avatar atualizado.'); }
+function setFavTeam(id){ state.user.team = id; saveState(); openAvatarPicker(); toast('Seleção favorita atualizada.'); }
+
+function openNamePicker(){
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-neon">PERFIL</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-2xl mb-4">SEU NOME</div>
+      <input id="name-input" type="text" value="${state.user.name}" maxlength="22"
+             class="w-full px-4 py-3 bg-carbon border border-white/10 rounded-xl text-bone focus:outline-none focus:border-neon mb-4" />
+      <button id="name-save" class="btn-primary w-full py-3 rounded-2xl font-display tracking-widest">SALVAR</button>
+    </div>
+  `);
+  $('#name-save').addEventListener('click',()=>{
+    state.user.name = $('#name-input').value.trim() || 'Torcedor'; saveState(); closeModal(); renderHUD(); renderPerfil();
+    toast('Nome atualizado.');
+  });
+}
+
+function confirmReset(){
+  openModal(`
+    <div class="px-5 pt-5 pb-8 text-center">
+      <div class="text-5xl mb-3">⚠️</div>
+      <div class="font-display text-2xl mb-2">APAGAR TUDO?</div>
+      <div class="text-sm text-muted mb-5">Seus palpites, pontos e grupos serão removidos.</div>
+      <div class="flex gap-2">
+        <button onclick="closeModal()" class="flex-1 py-3 rounded-2xl btn-ghost font-bold">Cancelar</button>
+        <button onclick="resetAll()" class="flex-1 py-3 rounded-2xl bg-cherry text-white font-bold">Apagar</button>
+      </div>
+    </div>
+  `);
+}
+function resetAll(){
+  localStorage.removeItem(LS_KEY);
+  state = seedState(structuredClone(defaultState));
+  saveState(); closeModal(); renderHUD(); setTab('home');
+  toast('Dados apagados.','warn');
+}
+
+function confirmSignOut(){
+  openModal(`
+    <div class="px-5 pt-5 pb-8 text-center">
+      <div class="text-5xl mb-3">👋</div>
+      <div class="font-display text-2xl mb-2">SAIR DA CONTA?</div>
+      <div class="text-sm text-muted mb-5">Você poderá voltar a qualquer momento usando seu e-mail e senha. Seus palpites e grupos ficam salvos na nuvem.</div>
+      <div class="flex gap-2">
+        <button onclick="closeModal()" class="flex-1 py-3 rounded-2xl btn-ghost font-bold">Cancelar</button>
+        <button onclick="doSignOut()" class="flex-1 py-3 rounded-2xl bg-cherry text-white font-bold">Sair</button>
+      </div>
+    </div>
+  `);
+}
+async function doSignOut(){
+  closeModal();
+  toast('Saindo...','ok');
+  try{
+    await window.CloudSync.signOut();
+  }catch(e){
+    toast('Erro ao sair: '+e.message,'err');
+  }
+}
+
+/* ---------------- 13. SHARE CARDS ---------------- */
+function openShareModal(kind, groupId){
+  const u = state.user;
+  const g = groupId? state.groups.find(x=>x.id===groupId) : state.groups[0];
+  const ranking = g? buildGroupRanking(g) : [];
+  const me = ranking.find(x=>x.id==='me');
+  const top = ranking[0];
+
+  const cards = {
+    leader: {
+      bg:'from-neon via-cyan to-neon',
+      title:'LÍDER DO BOLÃO',
+      hero:'👑',
+      subtitle: top? `${top.name}` : u.name,
+      stat: top? `${top.points} pts` : `${u.points} pts`,
+    },
+    daily: {
+      bg:'from-gold via-cherry to-gold',
+      title:'VENCEDOR DO DIA',
+      hero:'⚡',
+      subtitle: u.name,
+      stat: '+12 pts hoje',
+    },
+    weekly: {
+      bg:'from-cherry via-cyan to-cherry',
+      title:'TOP DA SEMANA',
+      hero:'🚀',
+      subtitle: u.name,
+      stat: `${u.points} pts`,
+    },
+    round: {
+      bg:'from-cyan via-neon to-cyan',
+      title:'CAMPEÃO DA RODADA',
+      hero:'🏆',
+      subtitle: u.name,
+      stat: 'Rodada 1',
+    },
+    meme: {
+      bg:'from-cherry via-gold to-cherry',
+      title:'PÉ FRIO OFICIAL',
+      hero:'🥶',
+      subtitle: u.name,
+      stat:'0 acertos',
+    },
+    group: {
+      bg:'from-neon via-gold to-cherry',
+      title: g?.name?.toUpperCase()||'MEU GRUPO',
+      hero: g?.emoji||'👥',
+      subtitle:'Top 3:',
+      stat: ranking.slice(0,3).map((u,i)=>`${i+1}. ${u.name}`).join(' · ')
+    },
+  };
+  const c = cards[kind] || cards.leader;
+
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-neon">COMPARTILHAR</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+
+      <div class="story bg-gradient-to-br ${c.bg} p-5">
+        <!-- Top bar -->
+        <div class="flex items-center justify-between">
+          <div class="font-display tracking-widest text-xs text-black/70">BOLÃO BR · 2026</div>
+          <div class="text-2xl">🇧🇷</div>
+        </div>
+        <!-- Hero -->
+        <div class="mt-8 text-center">
+          <div class="text-[140px] leading-none">${c.hero}</div>
+          <div class="font-chant text-3xl leading-tight text-black/90 mt-2">${c.title}</div>
+          <div class="text-sm text-black/70 font-bold mt-2">${c.subtitle}</div>
+          <div class="mt-3 inline-block px-4 py-2 rounded-full bg-black/30 text-white font-display tracking-widest text-sm">
+            ${c.stat}
+          </div>
+        </div>
+        <!-- Footer -->
+        <div class="absolute bottom-4 left-0 right-0 text-center text-xs text-black/60 font-bold">
+          baixe e cole o seu palpite · bolaobr.app
+        </div>
+      </div>
+
+      <button onclick="fakeShare('${c.title}')" class="btn-primary w-full py-3.5 rounded-2xl font-display tracking-widest text-base mt-4">
+        📤 COMPARTILHAR NOS STORIES
+      </button>
+      <button onclick="downloadCard(this)" class="w-full py-3 rounded-2xl btn-ghost font-bold text-sm mt-2">
+        ⬇️ Salvar imagem
+      </button>
+    </div>
+  `);
+}
+
+function fakeShare(title){
+  if(navigator.share){
+    navigator.share({ title:'BOLÃO BR · Copa 2026', text: title+' — confira meu palpite!', url: location.href }).catch(()=>{});
+  } else {
+    toast('📤 Compartilhamento enviado!');
+  }
+}
+function downloadCard(){
+  toast('📥 Imagem salva no rolo (simulado).','ok');
+}
+
+/* ---------------- 14. NOTIFICATIONS ---------------- */
+$('#bell-btn').addEventListener('click', openNotifications);
+function openNotifications(){
+  const items = state.notifications.slice().sort((a,b)=>b.ts-a.ts);
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-neon">NOTIFICAÇÕES</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-2xl mb-4">CENTRAL</div>
+      ${items.length? items.map(n=>`
+        <div class="card p-3 mb-2 ${n.read?'opacity-70':''}">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl grid place-items-center text-lg
+                 ${n.type==='live'?'bg-cherry/10 text-cherry':
+                   n.type==='warn'?'bg-gold/10 text-gold':
+                   n.type==='rank'?'bg-neon/10 text-neon':
+                   'bg-cyan/10 text-cyan'}">
+              ${n.type==='live'?'⚡':n.type==='warn'?'⏰':n.type==='rank'?'📈':'😂'}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-sm">${n.title}</div>
+              <div class="text-xs text-muted">${n.body}</div>
+              <div class="text-[10px] text-muted/70 mt-1">${timeAgo(n.ts)} atrás</div>
+            </div>
+            ${n.read?'':'<div class="w-2 h-2 rounded-full bg-cherry shrink-0 mt-2"></div>'}
+          </div>
+        </div>
+      `).join(''):'<div class="text-muted text-sm">Sem notificações.</div>'}
+      <button onclick="markAllRead()" class="w-full mt-3 py-3 rounded-2xl btn-ghost text-sm font-bold">Marcar todas como lidas</button>
+    </div>
+  `);
+}
+function markAllRead(){
+  state.notifications.forEach(n=>n.read=true); saveState(); renderHUD(); closeModal();
+  toast('Tudo lido. ✓');
+}
+function pushNotif(n){
+  state.notifications.unshift({ id:'n'+Date.now(), ts:Date.now(), read:false, ...n });
+  saveState(); renderHUD();
+  toast(`<span class="text-base">${n.title}</span><br/><span class="text-xs font-normal opacity-80">${n.body}</span>`,'ok');
+}
+
+/* Simulated background notifs */
+function startSimNotifs(){
+  if(!state.settings.notifs) return;
+  // first one after 12s
+  setTimeout(()=>{ pushNotif({ type:'rank', title:'📈 Você subiu!', body:'João Pedro acabou de te ultrapassar... brincadeira, você subiu pra 2º!' }); }, 12000);
+  setTimeout(()=>{ pushNotif({ type:'warn', title:'⏰ Atenção', body:'Faltam 30 minutos para fechar os palpites.' }); }, 35000);
+  setTimeout(()=>{ pushNotif({ type:'meme', title:'😂 Ana te zoou', body:'"Especialista em errar placar."' }); }, 60000);
+}
+
+/* ---------------- 15. INSTALL / PWA TIP ---------------- */
+let installPromptEvent = null;
+window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); installPromptEvent = e; });
+
+function openInstallTip(){
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[10px] tracking-widest text-gold">INSTALAR APP</div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+      <div class="font-display text-2xl mb-2">LEVA O BOLÃO BR <span class="shimmer-text">NA TELA INICIAL</span></div>
+      <div class="text-sm text-muted mb-4">Funciona offline, notificações estilo app esportivo e ícone na home do celular.</div>
+
+      ${installPromptEvent? `
+        <button id="do-install" class="btn-primary w-full py-3 rounded-2xl font-display tracking-widest mb-2">
+          📲 INSTALAR AGORA
+        </button>
+      ` : isIOS? `
+        <div class="card p-4 text-sm leading-relaxed">
+          <div class="font-bold mb-2">No iPhone (Safari):</div>
+          1. Toque no botão <span class="font-bold">Compartilhar</span> ⬆️<br/>
+          2. Role e toque em <span class="font-bold">Adicionar à Tela de Início</span> ➕<br/>
+          3. Toque em <span class="font-bold">Adicionar</span>.
+        </div>
+      ` : `
+        <div class="card p-4 text-sm leading-relaxed">
+          <div class="font-bold mb-2">No Android (Chrome):</div>
+          1. Toque no menu ⋮ no canto<br/>
+          2. Toque em <span class="font-bold">Instalar app</span> ou <span class="font-bold">Adicionar à tela inicial</span><br/>
+          3. Confirme.
+        </div>
+      `}
+
+      <div class="text-[10px] text-muted text-center mt-4">
+        🟢 Funciona offline · 🔔 Cache local · 🇧🇷 Pronto pra Copa
+      </div>
+    </div>
+  `);
+  $('#do-install')?.addEventListener('click', async ()=>{
+    if(installPromptEvent){
+      installPromptEvent.prompt();
+      const { outcome } = await installPromptEvent.userChoice;
+      if(outcome==='accepted'){ toast('🎉 App instalado!','ok'); state.installed=true; saveState(); closeModal(); }
+    }
+  });
+}
+
+/* ---------------- 16. PWA MANIFEST + SW (inline) ---------------- */
+function setupPWA(){
+  // Manifest e ícone já vêm nos <link> do <head>.
+  // Registra service worker (cache offline).
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./service-worker.js')
+      .catch(err => console.warn('SW registration falhou:', err));
+  }
+}
+
+/* ---------------- 17. KICKOFF ---------------- */
+function refreshActiveScreen(){
+  const active = $$('[data-screen].active')[0]?.dataset.screen || 'home';
+  setTab(active);
+}
+
+/* Boot do app principal.
+   Quando Firebase está configurado, é chamado APÓS o usuário logar
+   (via auth-ui.js) OU se o usuário escolher "continuar offline".
+   Quando Firebase NÃO está configurado, é chamado imediatamente. */
+window._appBoot = function appBoot(){
+  if (window._appBooted) return;
+  window._appBooted = true;
+
+  setupPWA();
+  renderHUD();
+  setTab('home');
+
+  // Hide splash after small delay for cinematic effect
+  setTimeout(()=>{
+    const sp = $('#splash');
+    if(sp){ sp.classList.add('hide'); setTimeout(()=>sp.remove(), 600); }
+  }, 600);
+
+  startSimNotifs();
+
+  // Se logado, sincroniza palpites/grupos da nuvem
+  if(window.CloudSync && window.CloudSync.isOnline && window.CloudSync.isOnline()){
+    syncFromCloud();
+  }
+};
+
+/* Quando logado: carrega palpites e grupos do Firestore */
+async function syncFromCloud(){
+  try{
+    // Atualiza nome/avatar do user a partir do Firebase Auth
+    const fbUser = window._firebaseAuth?.currentUser;
+    if(fbUser){
+      state.user.name = fbUser.displayName || (fbUser.email || '').split('@')[0] || 'Torcedor';
+      saveState();
+    }
+    const cloudPredictions = await window.CloudSync.loadMyPredictions();
+    if(Object.keys(cloudPredictions).length){
+      Object.assign(state.predictions, cloudPredictions);
+      saveState();
+    }
+    // Atualiza lista de grupos em tempo real
+    window.CloudSync.subscribeMyGroups(groups => {
+      if(groups && groups.length){
+        // Merge com grupos locais (preserva _localStub se houver)
+        state.groups = groups.map(g => ({...g}));
+        if(!state.selectedGroupId && groups[0]) state.selectedGroupId = groups[0].id;
+        saveState(); refreshActiveScreen();
+      }
+    });
+  }catch(e){ console.warn('Sync cloud falhou:', e); }
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(!window.FIREBASE_CONFIG){
+    // Modo offline: boot imediato
+    window._appBoot();
+  }
+  // Se Firebase configurado: auth-ui.js cuida de boot após login.
+});
+
+// Close modal when clicking backdrop
+$('#modal-root').addEventListener('click', e=>{
+  if(e.target.id==='modal-root') closeModal();
+});
+
+// Keyboard escape
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+</script>
+
+<!-- ===== FIREBASE (opcional) =====
+     firebase-config.js já está carregado no <head>.
+     Aqui carregamos só a camada de sincronização e a tela de login,
+     que dependem do app principal estar definido. -->
+<script src="firebase-sync.js"></script>
+<script src="auth-ui.js"></script>
+</body>
+</html>

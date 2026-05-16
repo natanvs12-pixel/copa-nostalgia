@@ -1,0 +1,21 @@
+{
+  "name": "BOLÃO BR · Copa 2026",
+  "short_name": "BOLÃO BR",
+  "description": "Bolão da Copa do Mundo 2026 com amigos, ranking, zoeira e tabelinha nostálgica.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050811",
+  "theme_color": "#050811",
+  "lang": "pt-BR",
+  "categories": ["sports", "entertainment", "social"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

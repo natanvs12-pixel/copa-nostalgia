@@ -1,0 +1,12 @@
+{
+  "name": "bolao-br",
+  "version": "1.0.0",
+  "description": "Bolão da Copa do Mundo 2026 — PWA com login, multi-usuário e tabelinha nostálgica.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  },
+  "keywords": ["copa-2026", "bolão", "pwa", "futebol"],
+  "license": "MIT"
+}
