@@ -15,12 +15,12 @@
    ============================================================ */
 
 window.FIREBASE_CONFIG = {
-  apiKey: "COLE_AQUI_SUA_API_KEY",
-  authDomain: "seu-projeto.firebaseapp.com",
-  projectId: "seu-projeto",
-  storageBucket: "seu-projeto.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:abcdef1234567890",
+  apiKey: "AIzaSyABTlWKK3fPKCBL5iLtPOWPPbFTJ8QDpEk",
+  authDomain: "copa-nostalgia.firebaseapp.com",
+  projectId: "copa-nostalgia",
+  storageBucket: "copa-nostalgia.firebasestorage.app",
+  messagingSenderId: "858436959316",
+  appId: "1:858436959316:web:0ce58a8c32d38616d741c1",
 };
 
 /* Deixe assim (config inválida/vazia) se quiser rodar em MODO OFFLINE
