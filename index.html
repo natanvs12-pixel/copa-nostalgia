@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -883,17 +884,6 @@ const PLAYERS = [
   { id:'p20', name:'Lukaku',          team:'BEL', odds:25.0 },
 ];
 
-const MOCK_FRIENDS = [
-  { id:'u1', name:'João Pedro',  avatar:'🦁', team:'BRA' },
-  { id:'u2', name:'Ana Beatriz', avatar:'🐉', team:'ARG' },
-  { id:'u3', name:'Carlos Tio',  avatar:'🐺', team:'BRA' },
-  { id:'u4', name:'Mariana',     avatar:'🦅', team:'POR' },
-  { id:'u5', name:'Lucas Zoeiro',avatar:'🤡', team:'BRA' },
-  { id:'u6', name:'Rafael F.',   avatar:'🐯', team:'FRA' },
-  { id:'u7', name:'Beto do Bar', avatar:'🦊', team:'BRA' },
-  { id:'u8', name:'Camila',      avatar:'🦋', team:'ESP' },
-];
-
 const MEME_PHRASES = [
   '🥶 Especialista em errar placar.',
   '🔮 Vidente da Copa.',
@@ -971,18 +961,9 @@ function loadState(){
 function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
 
 function seedState(s){
-  // initial demo group with friends
-  s.groups = [{
-    id:'g_demo',
-    name:'Os Boleiros da Firma',
-    emoji:'🍻',
-    color:'#00ffa3',
-    members:['me','u1','u2','u3','u4','u5'],
-    creator:'me',
-    code:'BR-DEMO1',
-    createdAt: Date.now()
-  }];
-  s.selectedGroupId = 'g_demo';
+  // Sem grupos pré-criados — usuário cria ou entra com código no Firestore.
+  s.groups = [];
+  s.selectedGroupId = null;
   // Copa 2026 começa em 11/06/2026 — antes disso não há jogos julgados.
   s.user.points = 0;
   s.user.streak = 0;
@@ -1003,125 +984,35 @@ function seedState(s){
 }
 
 /* ============================================================
-   CLOUD SYNC — Multi-usuário em tempo real (estilo Cartola)
+   CLOUD SYNC — Multi-usuário em tempo real via Firestore
    ============================================================
-   Esta camada abstrai a sincronização entre dispositivos.
-   HOJE (MVP) funciona local-only (localStorage).
-   AMANHÃ (produção) basta plugar Firebase/Supabase aqui:
-   nada mais no app precisa mudar.
-
-   PASSO A PASSO PARA ATIVAR O FIREBASE:
-   ─────────────────────────────────────
-   1. Vá em https://console.firebase.google.com → "Adicionar projeto"
-   2. No projeto criado, ative:
-      - Authentication (método: anônimo, Google ou e-mail)
-      - Firestore Database (modo de produção)
-   3. Em "Configurações do projeto" → "Seus apps" → "Web", copie o
-      objeto firebaseConfig e cole abaixo em window.FIREBASE_CONFIG.
-   4. Substitua o corpo de cada método do CloudSync por uma chamada
-      ao Firestore SDK (exemplo abaixo, comentado).
-   5. Crie as regras de segurança (Firestore Rules) para que cada
-      usuário só leia/escreva o que está autorizado.
-
-   Custo: o plano Spark (grátis) cobre uns milhares de usuários
-   tranquilamente. Pra escalar viral, Blaze custa centavos.
+   O objeto real (com Firebase Auth + Firestore) é instalado em
+   tempo de execução pelo arquivo firebase-sync.js. Aqui ficam
+   apenas placeholders pra evitar erros caso o app rode antes do
+   sync ter terminado de inicializar.
    ============================================================ */
 
-// FIREBASE_CONFIG é definido em firebase-config.js (carregado no <head>).
-// Se não for definido (config inválida ou arquivo ausente), o app roda offline.
 if (typeof window.FIREBASE_CONFIG === 'undefined') window.FIREBASE_CONFIG = null;
 
-const CloudSync = {
-  // Está sincronizando online?
-  isOnline(){ return !!window.FIREBASE_CONFIG && !!window._firebaseReady; },
-
-  /* CRIA GRUPO na nuvem
-     EXEMPLO COM FIREBASE:
-       import { doc, setDoc } from 'firebase/firestore';
-       await setDoc(doc(db, 'groups', group.id), {
-         name: group.name, emoji: group.emoji, color: group.color,
-         code: group.code, creator: auth.currentUser.uid,
-         members: [auth.currentUser.uid], createdAt: serverTimestamp()
-       });
-  */
-  async createGroup(group){
-    if(!this.isOnline()) return null;
-    // TODO: implementar gravação no Firestore
-    return group;
-  },
-
-  /* BUSCA grupo pelo código (alguém querendo entrar)
-     EXEMPLO COM FIREBASE:
-       import { collection, query, where, getDocs } from 'firebase/firestore';
-       const q = query(collection(db,'groups'), where('code','==',code));
-       const snap = await getDocs(q);
-       return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() };
-  */
-  async findGroupByCode(code){
-    if(!this.isOnline()) return null;
-    // TODO: buscar no Firestore
-    return null;
-  },
-
-  /* ENTRA no grupo (adiciona uid aos membros)
-     EXEMPLO COM FIREBASE:
-       import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
-       await updateDoc(doc(db,'groups',groupId), {
-         members: arrayUnion(auth.currentUser.uid)
-       });
-  */
-  async joinGroup(groupId){
-    if(!this.isOnline()) return false;
-    // TODO: implementar
-    return true;
-  },
-
-  /* PUBLICA palpite do usuário no Firestore (em /predictions/{uid}/matches/{matchId})
-     EXEMPLO:
-       await setDoc(doc(db, 'predictions', uid, 'matches', matchId), { a, b, ts });
-  */
-  async publishPrediction(matchId, prediction){
-    if(!this.isOnline()) return;
-    // TODO
-  },
-
-  /* OUVE atualizações de palpites do grupo em tempo real
-     EXEMPLO:
-       import { collection, onSnapshot } from 'firebase/firestore';
-       return onSnapshot(collection(db,'groups',groupId,'predictions'), snap => {
-         const all = {}; snap.forEach(d => all[d.id] = d.data()); callback(all);
-       });
-     Retorna função pra cancelar o listener.
-  */
-  subscribeGroupPredictions(groupId, callback){
-    if(!this.isOnline()) return ()=>{};
-    // TODO
-    return ()=>{};
-  },
-
-  /* OUVE placares oficiais (atualizados via Cloud Function que chama API esportiva)
-     EXEMPLO:
-       return onSnapshot(collection(db,'scores'), snap => {
-         const map = {}; snap.forEach(d => map[d.id] = d.data()); callback(map);
-       });
-  */
-  subscribeOfficialScores(callback){
-    if(!this.isOnline()) return ()=>{};
-    // TODO
-    return ()=>{};
-  },
-
-  /* LOGIN — para identificar cada usuário
-     EXEMPLO:
-       import { getAuth, signInAnonymously } from 'firebase/auth';
-       const cred = await signInAnonymously(auth);
-       return cred.user.uid;
-  */
-  async signIn(){
-    if(!this.isOnline()) return 'me'; // local: usuário único
-    // TODO
-    return 'me';
-  },
+window.CloudSync = window.CloudSync || {
+  isOnline(){ return false; },
+  getUid(){ return null; },
+  getUserEmail(){ return null; },
+  async createGroup(){ throw new Error('Conexão indisponível.'); },
+  async findGroupByCode(){ return null; },
+  async joinGroup(){ throw new Error('Conexão indisponível.'); },
+  async leaveGroup(){},
+  subscribeMyGroups(){ return ()=>{}; },
+  async publishPrediction(){},
+  async loadMyPredictions(){ return {}; },
+  subscribeGroupPredictions(){ return ()=>{}; },
+  subscribeOfficialScores(){ return ()=>{}; },
+  async updateProfile(){},
+  async signIn(){ return null; },
+  async signUp(){ return null; },
+  async signOut(){},
+  async sendPasswordReset(){},
+  onAuthChange(){ return ()=>{}; },
 };
 
 /* ---------------- 3. UTILS ---------------- */
@@ -1223,8 +1114,8 @@ function renderHUD(){
   $('#hud-points').textContent  = state.user.points;
   $('#hud-streak').textContent  = state.user.streak;
   $('#hud-correct').textContent = state.user.correct;
-  // rank within first group (mock)
-  $('#hud-rank').textContent = computeRank() + 'º';
+  const r = computeRank();
+  $('#hud-rank').textContent = (typeof r === 'number') ? (r + 'º') : '—';
   $('#user-avatar').textContent = state.user.avatar;
   $('#user-greeting').textContent = state.user.name;
   // notif dot
@@ -1233,15 +1124,12 @@ function renderHUD(){
 }
 
 function computeRank(){
-  // compute rank within selected group based on simulated points
   const g = state.groups.find(g=>g.id===state.selectedGroupId);
-  if(!g) return 1;
-  const others = g.members.filter(m=>m!=='me').map(uid=>{
-    return { id:uid, points: randIntSeed(uid, 5, 35) };
-  });
-  others.push({ id:'me', points: state.user.points });
-  others.sort((a,b)=>b.points-a.points);
-  return others.findIndex(x=>x.id==='me')+1;
+  if(!g) return '—';
+  const ranking = buildGroupRanking(g);
+  const me = myUid();
+  const idx = ranking.findIndex(x=>x.id===me || x.id==='me');
+  return idx >= 0 ? (idx+1) : '—';
 }
 function randIntSeed(seed, min, max){
   let h=0; for(let i=0;i<seed.length;i++){ h = (h*31 + seed.charCodeAt(i))>>>0; }
@@ -1255,13 +1143,9 @@ function renderHome(){
   const upcoming = MATCHES.filter(m=>matchStatus(m)==='upcoming').slice(0,4);
   const nextBR = MATCHES.find(m=>matchStatus(m)==='upcoming' && (m.a==='BRA'||m.b==='BRA'));
 
-  // Build leaderboard mini (mock)
+  // Ranking mini do grupo ativo (vem do cache real do Firestore)
   const g = state.groups.find(g=>g.id===state.selectedGroupId);
-  const leaderboard = (g? g.members:['me']).map(uid=>{
-    if(uid==='me') return { id:'me', name:state.user.name, avatar:state.user.avatar, points:state.user.points };
-    const u = MOCK_FRIENDS.find(f=>f.id===uid) || { id:uid, name:'Amigo', avatar:'🙂' };
-    return { ...u, points: randIntSeed(uid,5,40) };
-  }).sort((a,b)=>b.points-a.points);
+  const leaderboard = g ? buildGroupRanking(g) : [];
 
   screen.innerHTML = `
     <!-- Hero / countdown to next BR match -->
@@ -1312,22 +1196,37 @@ function renderHome(){
     </div>
 
     <!-- Ranking mini -->
+    ${g ? `
     <div>
       <div class="flex items-center justify-between mb-2 px-1">
-        <h2 class="font-display tracking-wider text-xl">RANKING · ${g?g.emoji+' '+g.name.toUpperCase():''}</h2>
+        <h2 class="font-display tracking-wider text-xl">RANKING · ${g.emoji+' '+g.name.toUpperCase()}</h2>
         <button class="text-xs text-neon font-bold" onclick="setTab('grupos')">VER GRUPO →</button>
       </div>
       <div class="card p-3 space-y-2">
-        ${leaderboard.slice(0,5).map((u,i)=>`
-          <div class="flex items-center gap-3 px-2 py-2 rounded-xl ${u.id==='me'?'bg-neon/5 border border-neon/30':''}">
+        ${leaderboard.slice(0,5).map((u,i)=>{
+          const isMe = u.id===myUid() || u.id==='me';
+          return `
+          <div class="flex items-center gap-3 px-2 py-2 rounded-xl ${isMe?'bg-neon/5 border border-neon/30':''}">
             <div class="w-6 font-display text-lg text-center ${i===0?'text-gold':i===1?'text-bone':i===2?'text-cherry':'text-muted'}">${i+1}</div>
             <div class="w-9 h-9 rounded-full bg-carbon border border-white/10 grid place-items-center text-lg">${u.avatar}</div>
-            <div class="flex-1 truncate font-semibold ${u.id==='me'?'text-neon':''}">${u.name}${u.id==='me'?' (você)':''}</div>
+            <div class="flex-1 truncate font-semibold ${isMe?'text-neon':''}">${u.name}${isMe?' (você)':''}</div>
             <div class="font-display text-xl">${u.points}</div>
           </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
     </div>
+    ` : `
+    <div class="card-elev p-5 text-center">
+      <div class="text-4xl mb-2">👥</div>
+      <div class="font-display text-xl mb-1">SEM GRUPO ATIVO</div>
+      <div class="text-sm text-muted mb-4">Crie um grupo ou entre num que já existe pra começar a competir com os amigos.</div>
+      <div class="grid grid-cols-2 gap-2">
+        <button class="py-2.5 rounded-xl btn-primary text-xs font-bold" onclick="setTab('grupos')">+ Criar grupo</button>
+        <button class="py-2.5 rounded-xl btn-ghost text-xs font-bold" onclick="setTab('grupos')">🔗 Entrar</button>
+      </div>
+    </div>
+    `}
 
     <!-- Bolão longo prazo CTA -->
     <div class="card p-4 trophy-bg overflow-hidden relative">
@@ -2235,18 +2134,14 @@ function openMatchDetail(id){
         }).join('')}
       </div>
 
-      <div class="text-[10px] tracking-widest text-muted mb-2">O QUE ESTÃO DIZENDO</div>
-      <div class="space-y-2">
-        ${(reactions.length? MOCK_FRIENDS.slice(0,3).map((f,i)=>`
-          <div class="flex items-start gap-2 card p-3">
-            <div class="w-8 h-8 rounded-full bg-carbon border border-white/10 grid place-items-center">${f.avatar}</div>
-            <div>
-              <div class="text-xs font-bold">${f.name} <span class="text-muted font-normal">· ${timeAgo(Date.now()-i*60000*7)}</span></div>
-              <div class="text-sm">${randPick(MEME_PHRASES)}</div>
-            </div>
-          </div>
-        `).join(''):'<div class="text-sm text-muted">Seja o primeiro a reagir.</div>')}
+      ${reactions.length ? `
+      <div class="text-[10px] tracking-widest text-muted mb-2 mt-1">${reactions.length} REAÇÃO${reactions.length>1?'ÕES':''} NESSE JOGO</div>
+      <div class="card p-3 text-sm text-muted">
+        ${reactions.slice(-8).map(r=>`<span class="text-2xl mr-1">${r}</span>`).join('')}
       </div>
+      ` : `
+      <div class="card p-3 text-sm text-muted text-center">Seja o primeiro a reagir.</div>
+      `}
     </div>
   `);
 }
@@ -2327,7 +2222,7 @@ function openPredictModal(matchId){
     const prediction = { a, b, ts: Date.now() };
     state.predictions[matchId] = prediction;
     saveState();
-    // Sincroniza com a nuvem (Firebase real ou no-op no MVP)
+    // Sincroniza com a nuvem
     CloudSync.publishPrediction(matchId, prediction);
     closeModal();
     confetti();
@@ -2445,26 +2340,28 @@ function renderGrupos(){
         <button class="btn-primary px-3 py-2 rounded-xl text-xs font-bold" onclick="openCreateGroupModal()">+ NOVO</button>
       </div>
     </div>
-    <div class="text-sm text-muted">Crie um grupo e compartilhe o <span class="text-neon font-bold">código</span> com seus amigos — eles entram no app deles igual no Cartola.</div>
+    <div class="text-sm text-muted">Crie um grupo e compartilhe o <span class="text-neon font-bold">código</span> com seus amigos — todos competem em tempo real.</div>
 
-    <!-- Banner explicativo sobre sync -->
-    <div class="card p-3 flex items-start gap-3" style="background:linear-gradient(135deg, rgba(0,255,163,.06), rgba(0,229,255,.04)); border:1px solid rgba(0,255,163,.18)">
-      <div class="text-2xl">📡</div>
-      <div class="flex-1">
-        <div class="text-xs font-bold text-neon">SINCRONIZAÇÃO ENTRE AMIGOS</div>
-        <div class="text-[11px] text-muted mt-1 leading-snug">
-          No modo atual (offline/MVP) os palpites ficam no seu celular. Quando o Firebase for ativado, cada amigo que entrar com o código vê o ranking em tempo real, igual Cartola.
-          <button onclick="openCloudInfoModal()" class="text-cyan font-bold ml-1">como ativar →</button>
+    ${groups.length === 0 ? `
+      <div class="card-elev p-6 text-center">
+        <div class="text-5xl mb-3">⚽</div>
+        <div class="font-display text-xl mb-2">VOCÊ AINDA NÃO TEM GRUPOS</div>
+        <div class="text-sm text-muted mb-5">Crie um grupo e chame a galera, ou entre num que já existe com um código.</div>
+        <div class="grid grid-cols-2 gap-2">
+          <button class="py-3 rounded-xl btn-primary text-sm font-bold" onclick="openCreateGroupModal()">+ Criar grupo</button>
+          <button class="py-3 rounded-xl btn-ghost text-sm font-bold" onclick="openJoinGroupModal()">🔗 Entrar com código</button>
         </div>
       </div>
-    </div>
+    ` : ''}
 
     <div class="space-y-3">
       ${groups.map(g=>{
         const ranking = buildGroupRanking(g);
-        const meRank = ranking.findIndex(x=>x.id==='me')+1;
+        const meIdx = ranking.findIndex(x=>x.id===myUid() || x.id==='me');
+        const meRank = meIdx>=0 ? (meIdx+1) : '—';
         const selected = g.id===state.selectedGroupId;
         const code = g.code || 'BR-XXXX';
+        const memberCount = (g.members||[]).length;
         return `
           <div class="card-elev p-4 ${selected?'border-neon/40':''}">
             <div class="flex items-center gap-3">
@@ -2473,7 +2370,7 @@ function renderGrupos(){
               </div>
               <div class="flex-1 min-w-0">
                 <div class="font-display text-xl leading-tight truncate">${g.name}</div>
-                <div class="text-xs text-muted">${g.members.length} membros · você é o ${meRank}º</div>
+                <div class="text-xs text-muted">${memberCount} membro${memberCount>1?'s':''}${typeof meRank==='number'?' · você é o '+meRank+'º':''}</div>
               </div>
               <button onclick="selectGroup('${g.id}')" class="px-3 py-1.5 rounded-full text-[11px] font-bold ${selected?'bg-neon text-black':'btn-ghost'}">
                 ${selected?'★ Ativo':'Ativar'}
@@ -2489,43 +2386,67 @@ function renderGrupos(){
             </div>
 
             <div class="mt-3 space-y-1.5">
-              ${ranking.slice(0,5).map((u,i)=>`
-                <div class="flex items-center gap-3 px-2 py-2 rounded-xl ${u.id==='me'?'bg-neon/5 border border-neon/20':''}">
+              ${ranking.slice(0,5).map((u,i)=>{
+                const isMe = u.id===myUid() || u.id==='me';
+                return `
+                <div class="flex items-center gap-3 px-2 py-2 rounded-xl ${isMe?'bg-neon/5 border border-neon/20':''}">
                   <div class="w-5 font-display text-base text-center ${i===0?'text-gold':i===1?'text-bone':i===2?'text-cherry':'text-muted'}">${i+1}</div>
                   <div class="w-8 h-8 rounded-full bg-carbon grid place-items-center text-base border border-white/10">${u.avatar}</div>
-                  <div class="flex-1 truncate text-sm font-semibold ${u.id==='me'?'text-neon':''}">${u.name}${u.id==='me'?' (você)':''}</div>
+                  <div class="flex-1 truncate text-sm font-semibold ${isMe?'text-neon':''}">${u.name}${isMe?' (você)':''}</div>
                   ${u.title?`<div class="text-[9px] text-muted italic">${u.title}</div>`:''}
                   <div class="font-display text-lg">${u.points}</div>
                 </div>
-              `).join('')}
+                `;
+              }).join('')}
             </div>
 
             <div class="flex items-center gap-2 mt-4">
-              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="openAddFriendModal('${g.id}')">➕ Amigos</button>
-              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="openRecordGuessModal('${g.id}')">📝 Palpites</button>
-              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="openShareModal('group','${g.id}')">📤 Card</button>
+              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="openAddFriendModal('${g.id}')">👥 Membros</button>
+              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="shareCode('${g.code||''}','${g.name.replace(/'/g,'')}')">📤 Convidar</button>
+              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="openShareModal('group','${g.id}')">🎨 Card</button>
             </div>
           </div>
         `;
       }).join('')}
     </div>
 
-    <div class="grid grid-cols-2 gap-2">
-      <button class="py-4 rounded-2xl card text-sm text-muted font-bold border-dashed" onclick="openCreateGroupModal()">
-        + Criar grupo
-      </button>
-      <button class="py-4 rounded-2xl card text-sm text-muted font-bold border-dashed" onclick="openJoinGroupModal()">
-        🔗 Entrar com código
-      </button>
-    </div>
+    ${groups.length > 0 ? `
+      <div class="grid grid-cols-2 gap-2">
+        <button class="py-4 rounded-2xl card text-sm text-muted font-bold border-dashed" onclick="openCreateGroupModal()">
+          + Criar grupo
+        </button>
+        <button class="py-4 rounded-2xl card text-sm text-muted font-bold border-dashed" onclick="openJoinGroupModal()">
+          🔗 Entrar com código
+        </button>
+      </div>
+    ` : ''}
   `;
 }
 
+function myUid(){
+  return (window.CloudSync && window.CloudSync.getUid && window.CloudSync.getUid()) || 'me';
+}
+
+/* Cache de usuários do Firestore (preenchido por subscribeGroupMembers) */
+window._userCache = window._userCache || {};
+
 function buildGroupRanking(g){
-  const list = g.members.map(uid=>{
-    if(uid==='me') return { id:'me', name:state.user.name, avatar:state.user.avatar, points:state.user.points, title: state.user.titles[0] };
-    const f = MOCK_FRIENDS.find(x=>x.id===uid) || { id:uid, name:'Amigo', avatar:'🙂' };
-    return { ...f, points: randIntSeed(uid,5,40), title: MEME_TITLES[Math.abs(uid.charCodeAt(0))%MEME_TITLES.length] };
+  const me = myUid();
+  const list = (g.members || []).map(uid=>{
+    if(uid===me || uid==='me'){
+      return { id:me, name:state.user.name, avatar:state.user.avatar, points:state.user.points, title: state.user.titles[0] };
+    }
+    const cached = window._userCache[uid];
+    if(cached){
+      return {
+        id: uid,
+        name: cached.displayName || cached.email?.split('@')[0] || 'Amigo',
+        avatar: cached.avatar || '🙂',
+        points: cached.points || 0,
+        title: cached.title || ''
+      };
+    }
+    return { id:uid, name:'Amigo', avatar:'🙂', points:0, title:'' };
   });
   list.sort((a,b)=>b.points-a.points);
   return list;
@@ -2558,22 +2479,15 @@ function openCreateGroupModal(){
       </div>
 
       <label class="text-[10px] tracking-widest text-muted">COR DE DESTAQUE</label>
-      <div class="flex gap-2 mt-2 mb-4">
+      <div class="flex gap-2 mt-2 mb-5">
         ${['#00ffa3','#ffd60a','#ff2d87','#00e5ff','#caff33'].map((c,i)=>`
           <button data-color="${c}" class="color-pick w-10 h-10 rounded-full border-2 ${i===0?'border-white':'border-transparent'}" style="background:${c}"></button>
         `).join('')}
       </div>
 
-      <label class="text-[10px] tracking-widest text-muted">CONVIDAR AMIGOS</label>
-      <div class="mt-2 mb-5 max-h-40 overflow-y-auto space-y-1.5">
-        ${MOCK_FRIENDS.map(f=>`
-          <label class="flex items-center gap-3 px-3 py-2 rounded-xl card cursor-pointer">
-            <input type="checkbox" data-friend="${f.id}" class="friend-pick accent-neon w-5 h-5" />
-            <div class="w-8 h-8 rounded-full bg-carbon grid place-items-center border border-white/10">${f.avatar}</div>
-            <div class="flex-1 text-sm font-semibold">${f.name}</div>
-            <div class="text-xs text-muted">${teamById(f.team)?.flag||''}</div>
-          </label>
-        `).join('')}
+      <div class="card p-3 mb-5 text-[11px] text-muted leading-snug">
+        <div class="font-bold text-bone mb-1">💡 Como funciona</div>
+        Depois de criar, você recebe um código tipo <span class="text-neon font-bold">BR-XXXXX</span>. Compartilhe pelo WhatsApp — seus amigos entram no grupo pelo app deles e o ranking aparece em tempo real pra todo mundo.
       </div>
 
       <button id="create-group-confirm" class="btn-primary w-full py-3.5 rounded-2xl font-display tracking-widest">
@@ -2595,25 +2509,37 @@ function openCreateGroupModal(){
     chosenColor = b.dataset.color;
   }));
 
-  $('#create-group-confirm').addEventListener('click',()=>{
+  $('#create-group-confirm').addEventListener('click', async ()=>{
+    const btn = $('#create-group-confirm');
     const name = $('#g-name').value.trim() || 'Meu Grupo';
-    const friends = $$('.friend-pick:checked').map(c=>c.dataset.friend);
     const id = 'g_'+Date.now();
     const code = generateGroupCode();
     const newGroup = {
       id, name, emoji: chosenEmoji, color: chosenColor,
-      members: ['me', ...friends],
-      creator: 'me', code, createdAt: Date.now()
+      members: [myUid()],
+      creator: myUid(), code, createdAt: Date.now()
     };
-    state.groups.unshift(newGroup);
-    state.selectedGroupId = id;
-    saveState();
-    // Push to cloud (no-op no MVP, mas pronto pra Firebase)
-    CloudSync.createGroup(newGroup);
-    closeModal(); confetti();
-    // Mostra tela de sucesso com o código pra compartilhar
-    openGroupCreatedModal(newGroup);
-    renderHUD();
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="inline-block w-4 h-4 rounded-full border-2 border-black/30 border-t-black animate-spin align-middle mr-2"></span>CRIANDO...';
+
+    try{
+      await CloudSync.createGroup(newGroup);
+      // O subscribeMyGroups vai trazer o grupo de volta, mas garantimos seleção imediata:
+      state.selectedGroupId = id;
+      // Optimistic add (será reconciliado pelo snapshot):
+      if(!state.groups.find(g=>g.id===id)) state.groups.unshift(newGroup);
+      saveState();
+      closeModal();
+      confetti();
+      openGroupCreatedModal(newGroup);
+      renderHUD();
+    }catch(err){
+      console.error(err);
+      toast('Erro ao criar grupo: '+(err.message||'tente novamente'),'err');
+      btn.disabled = false;
+      btn.textContent = 'CRIAR GRUPO';
+    }
   });
 }
 
@@ -2646,11 +2572,6 @@ function openGroupCreatedModal(g){
         <button onclick="shareCode('${g.code}','${g.name.replace(/'/g,'')}')" class="py-3 rounded-2xl btn-primary font-bold text-sm">📤 WhatsApp</button>
       </div>
       <button onclick="closeModal();renderGrupos()" class="w-full mt-3 py-3 rounded-2xl text-sm font-bold text-muted">Pronto</button>
-
-      <div class="mt-5 text-[10px] text-muted leading-snug border-t border-white/10 pt-4">
-        ⚠️ <b>Modo offline (MVP):</b> hoje o código é local. Para sincronizar com amigos de verdade, é só plugar o Firebase.
-        <button onclick="closeModal();openCloudInfoModal()" class="text-cyan font-bold">como funciona →</button>
-      </div>
     </div>
   `);
 }
@@ -2700,8 +2621,7 @@ function openJoinGroupModal(){
 
       <div class="mt-5 card p-3 text-[11px] text-muted leading-snug">
         <div class="font-bold text-bone mb-1">Como funciona</div>
-        Quem criou o grupo te manda o código pelo WhatsApp. Você digita aqui e cai no mesmo bolão. A partir daí, cada um palpita no próprio celular e o ranking aparece pra todos.
-        <div class="mt-2 italic">📡 Atualmente em modo offline. Para sincronização real, ative o Firebase no código.</div>
+        Quem criou o grupo te manda o código pelo WhatsApp. Você digita aqui e cai no mesmo bolão. A partir daí, cada um palpita no próprio celular e o ranking aparece pra todos em tempo real.
       </div>
     </div>
   `);
@@ -2717,174 +2637,65 @@ function openJoinGroupModal(){
   setTimeout(()=>input.focus(), 100);
 
   $('#join-confirm').addEventListener('click', async ()=>{
+    const btn = $('#join-confirm');
     const code = input.value.trim().toUpperCase();
     if(!/^BR-[A-Z0-9]{4,6}$/.test(code)){
       toast('Código inválido. Formato: BR-XXXXX','err');
       return;
     }
     // Já está em algum grupo com esse código?
-    if(state.groups.some(g=>g.code===code)){
-      toast('Você já está nesse grupo.','warn');
-      const g = state.groups.find(g=>g.code===code);
-      state.selectedGroupId = g.id; saveState(); closeModal(); renderGrupos();
+    const existing = state.groups.find(g=>g.code===code);
+    if(existing){
+      state.selectedGroupId = existing.id; saveState(); closeModal(); renderGrupos();
+      toast(`Você já está em "${existing.name}".`,'warn');
       return;
     }
-    // Busca no cloud (Firebase real) — no MVP, retorna null e cria stub local
-    const remoteGroup = await CloudSync.findGroupByCode(code);
-    if(remoteGroup){
-      // Adiciona usuário ao grupo na nuvem
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="inline-block w-4 h-4 rounded-full border-2 border-black/30 border-t-black animate-spin align-middle mr-2"></span>BUSCANDO...';
+
+    try{
+      const remoteGroup = await CloudSync.findGroupByCode(code);
+      if(!remoteGroup){
+        toast('Grupo não encontrado. Confira o código.','err');
+        btn.disabled = false;
+        btn.textContent = '🔗 ENTRAR NO GRUPO';
+        return;
+      }
       await CloudSync.joinGroup(remoteGroup.id);
-      state.groups.unshift(remoteGroup);
+      // Optimistic add (snapshot reconcilia depois)
+      if(!state.groups.find(g=>g.id===remoteGroup.id)){
+        state.groups.unshift(remoteGroup);
+      }
       state.selectedGroupId = remoteGroup.id;
       saveState(); closeModal(); confetti();
       toast(`🎉 Você entrou em "${remoteGroup.name}"!`,'ok');
       renderGrupos(); renderHUD();
-    } else {
-      // Modo MVP: simula entrada criando um grupo "espelho" local
-      const id = 'g_join_'+Date.now();
-      const fakeGroup = {
-        id, name:'Grupo ' + code, emoji:'🎯', color:'#00e5ff',
-        members:['me','u1','u2','u3'], creator:'u1', code, createdAt: Date.now(),
-        _localStub: true
-      };
-      state.groups.unshift(fakeGroup);
-      state.selectedGroupId = id;
-      saveState(); closeModal(); confetti();
-      toast(`🔗 Modo offline: grupo simulado criado com código ${code}.`,'warn');
-      // Avisa que é simulação
-      setTimeout(()=>{
-        pushNotif({ type:'warn', title:'📡 Modo offline ativo',
-          body:`Pra ver palpites reais dos amigos, ative o Firebase. Toque em "Grupos" → "como ativar".` });
-      }, 800);
-      renderGrupos(); renderHUD();
+    }catch(err){
+      console.error(err);
+      toast('Erro ao entrar: '+(err.message||'tente novamente'),'err');
+      btn.disabled = false;
+      btn.textContent = '🔗 ENTRAR NO GRUPO';
     }
   });
-}
-
-/* MODAL: como ativar sincronização (Firebase) */
-function openCloudInfoModal(){
-  openModal(`
-    <div class="px-5 pt-5 pb-8">
-      <div class="flex items-center justify-between mb-3">
-        <div class="text-[10px] tracking-widest text-cyan">SINCRONIZAÇÃO EM TEMPO REAL</div>
-        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
-      </div>
-      <div class="font-display text-3xl leading-tight">COMO ATIVAR <span class="text-neon">FIREBASE</span></div>
-      <div class="text-sm text-muted mt-1 mb-4">Pra que cada amigo veja o bolão atualizando ao vivo, igual Cartola.</div>
-
-      <div class="space-y-3 text-sm">
-        <div class="card p-3">
-          <div class="text-[10px] text-neon font-bold tracking-widest mb-1">PASSO 1 · GRÁTIS</div>
-          <div>Criar conta no <span class="text-bone font-bold">console.firebase.google.com</span> e fazer um projeto novo (3 cliques).</div>
-        </div>
-        <div class="card p-3">
-          <div class="text-[10px] text-neon font-bold tracking-widest mb-1">PASSO 2</div>
-          <div>Ativar <span class="text-bone font-bold">Firestore Database</span> (banco) e <span class="text-bone font-bold">Authentication</span> (login).</div>
-        </div>
-        <div class="card p-3">
-          <div class="text-[10px] text-neon font-bold tracking-widest mb-1">PASSO 3</div>
-          <div>Copiar a config do projeto e colar dentro de <code class="text-cyan">window.FIREBASE_CONFIG</code> no código do app.</div>
-        </div>
-        <div class="card p-3">
-          <div class="text-[10px] text-neon font-bold tracking-widest mb-1">PASSO 4</div>
-          <div>Trocar as funções do objeto <code class="text-cyan">CloudSync</code> (já preparadas no código) por chamadas reais ao Firestore.</div>
-        </div>
-      </div>
-
-      <div class="card p-3 mt-4" style="background:rgba(0,229,255,.05); border:1px solid rgba(0,229,255,.2)">
-        <div class="text-[11px] text-cyan font-bold mb-1">📦 ESTRUTURA DE DADOS (Firestore)</div>
-        <pre class="text-[10px] text-muted overflow-x-auto leading-relaxed"><code>collection: groups
-  doc {id}
-    name, emoji, color, code, creator
-    members: [uid1, uid2, ...]
-
-collection: predictions
-  doc {uid}
-    matchId: { a, b, ts }
-
-collection: scores         (placares reais — sync via Cloud Functions)
-  doc {matchId}
-    a, b, status</code></pre>
-      </div>
-
-      <div class="text-[11px] text-muted mt-4 leading-snug">
-        Plano <b>Spark (grátis)</b> do Firebase atende tranquilo até 50 mil leituras/dia — dá pra um bolão entre amigos sem custo. Pra escalar viral, o Blaze é "pague o que usar" e fica em centavos pra milhares de usuários.
-      </div>
-
-      <button onclick="closeModal()" class="btn-primary w-full py-3 rounded-2xl font-display tracking-widest mt-5">
-        ENTENDI
-      </button>
-    </div>
-  `);
 }
 
 /* ADD FRIEND */
 function openAddFriendModal(groupId){
   const g = state.groups.find(x=>x.id===groupId); if(!g) return;
-  openModal(`
-    <div class="px-5 pt-5 pb-8">
-      <div class="flex items-center justify-between mb-3">
-        <div class="text-[10px] tracking-widest text-neon">${g.emoji} ${g.name.toUpperCase()}</div>
-        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
-      </div>
-      <div class="font-display text-2xl mb-1">ADICIONAR AMIGOS</div>
-      <div class="text-sm text-muted mb-4">Selecione amigos para o grupo. (Sincronização real virá depois com Firebase.)</div>
-
-      <input id="search-friend" type="text" placeholder="🔍 Buscar amigos..."
-             class="w-full mb-4 px-4 py-3 bg-carbon border border-white/10 rounded-xl text-bone placeholder:text-muted/60 focus:outline-none focus:border-neon" />
-
-      <div id="friend-list" class="space-y-1.5 max-h-72 overflow-y-auto">
-        ${MOCK_FRIENDS.map(f=>{
-          const inGroup = g.members.includes(f.id);
-          return `
-          <div data-friend-name="${f.name.toLowerCase()}" class="flex items-center gap-3 px-3 py-2 rounded-xl card">
-            <div class="w-9 h-9 rounded-full bg-carbon grid place-items-center border border-white/10">${f.avatar}</div>
-            <div class="flex-1">
-              <div class="text-sm font-semibold">${f.name}</div>
-              <div class="text-[10px] text-muted">${teamById(f.team)?.flag||''} ${teamById(f.team)?.name||''}</div>
-            </div>
-            <button onclick="toggleFriendInGroup('${groupId}','${f.id}')" class="px-3 py-1.5 rounded-full text-xs font-bold ${inGroup?'btn-ghost text-cherry':'bg-neon text-black'}">
-              ${inGroup?'Remover':'Adicionar'}
-            </button>
-          </div>`;
-        }).join('')}
-      </div>
-
-      <div class="mt-4 card p-3">
-        <div class="text-[10px] tracking-widest text-muted">CONVITE MANUAL</div>
-        <input id="manual-name" type="text" placeholder="Nome do amigo"
-               class="w-full mt-2 mb-2 px-3 py-2 bg-carbon border border-white/10 rounded-lg text-sm focus:outline-none focus:border-neon" />
-        <button onclick="addManualFriend('${groupId}')" class="w-full py-2 rounded-lg btn-ghost text-sm font-bold">+ Adicionar manualmente</button>
-      </div>
-    </div>
-  `);
-  $('#search-friend').addEventListener('input', e=>{
-    const q = e.target.value.toLowerCase();
-    $$('#friend-list > div').forEach(row=>{
-      row.style.display = row.dataset.friendName.includes(q)?'flex':'none';
-    });
+  const me = myUid();
+  const members = (g.members||[]).map(uid=>{
+    if(uid===me || uid==='me'){
+      return { uid, name: state.user.name + ' (você)', avatar: state.user.avatar, isMe:true };
+    }
+    const cached = window._userCache[uid];
+    return {
+      uid,
+      name: cached?.displayName || cached?.email?.split('@')[0] || 'Membro',
+      avatar: cached?.avatar || '🙂',
+      isMe:false
+    };
   });
-}
-function toggleFriendInGroup(gid, fid){
-  const g = state.groups.find(x=>x.id===gid); if(!g) return;
-  if(g.members.includes(fid)) g.members = g.members.filter(x=>x!==fid);
-  else g.members.push(fid);
-  saveState(); openAddFriendModal(gid); renderGrupos();
-}
-function addManualFriend(gid){
-  const name = $('#manual-name').value.trim(); if(!name){ toast('Digite um nome.','warn'); return; }
-  const g = state.groups.find(x=>x.id===gid); if(!g) return;
-  const id = 'mu_'+Date.now();
-  MOCK_FRIENDS.push({ id, name, avatar:'🙂', team:'BRA' });
-  g.members.push(id); saveState(); openAddFriendModal(gid); renderGrupos();
-  toast(`👋 ${name} adicionado.`,'ok');
-}
-
-/* RECORD GUESS */
-function openRecordGuessModal(groupId){
-  const g = state.groups.find(x=>x.id===groupId); if(!g) return;
-  const upcoming = MATCHES.filter(m=>matchStatus(m)==='upcoming' && m.a && m.b).slice(0,8);
-  const friends = g.members.filter(m=>m!=='me').map(id=>MOCK_FRIENDS.find(f=>f.id===id)||{id,name:'Amigo',avatar:'🙂'});
 
   openModal(`
     <div class="px-5 pt-5 pb-8">
@@ -2892,34 +2703,36 @@ function openRecordGuessModal(groupId){
         <div class="text-[10px] tracking-widest text-neon">${g.emoji} ${g.name.toUpperCase()}</div>
         <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
       </div>
-      <div class="font-display text-2xl mb-1">REGISTRAR PALPITES</div>
-      <div class="text-sm text-muted mb-4">Anote o palpite dos amigos para gerar o ranking automático.</div>
+      <div class="font-display text-2xl mb-1">CONVIDAR AMIGOS</div>
+      <div class="text-sm text-muted mb-4">Compartilhe o código do grupo — quem digitar no app entra direto.</div>
 
-      <label class="text-[10px] tracking-widest text-muted">JOGO</label>
-      <select id="rg-match" class="w-full mt-1 mb-4 px-3 py-3 bg-carbon border border-white/10 rounded-xl text-bone focus:outline-none focus:border-neon">
-        ${upcoming.map(m=>`<option value="${m.id}">${teamById(m.a).flag} ${teamById(m.a).name} x ${teamById(m.b).name} ${teamById(m.b).flag}</option>`).join('')}
-      </select>
+      <div class="card-elev p-4 text-center mb-4">
+        <div class="text-[10px] tracking-widest text-neon mb-1">CÓDIGO DO BOLÃO</div>
+        <div class="font-display text-4xl tracking-[0.25em] text-neon shimmer-text">${g.code || 'BR-XXXX'}</div>
+      </div>
 
-      <div class="space-y-2">
-        ${friends.map(f=>`
-          <div class="card p-3 flex items-center gap-2">
-            <div class="w-9 h-9 rounded-full bg-carbon grid place-items-center border border-white/10">${f.avatar}</div>
-            <div class="flex-1 text-sm font-semibold truncate">${f.name}</div>
-            <input type="number" min="0" max="20" data-f="${f.id}" data-side="a" class="rg-input w-12 px-2 py-2 bg-ink border border-white/10 rounded-lg text-center" value="0" />
-            <span class="text-muted">x</span>
-            <input type="number" min="0" max="20" data-f="${f.id}" data-side="b" class="rg-input w-12 px-2 py-2 bg-ink border border-white/10 rounded-lg text-center" value="0" />
+      <div class="grid grid-cols-2 gap-2 mb-5">
+        <button onclick="copyCode('${g.code}')" class="py-3 rounded-2xl btn-ghost font-bold text-sm">📋 Copiar</button>
+        <button onclick="shareCode('${g.code}','${g.name.replace(/'/g,'')}')" class="py-3 rounded-2xl btn-primary font-bold text-sm">📤 WhatsApp</button>
+      </div>
+
+      <div class="text-[10px] tracking-widest text-muted mb-2">${members.length} MEMBRO${members.length>1?'S':''}</div>
+      <div class="space-y-1.5 max-h-60 overflow-y-auto">
+        ${members.map(m=>`
+          <div class="flex items-center gap-3 px-3 py-2 rounded-xl card">
+            <div class="w-9 h-9 rounded-full bg-carbon grid place-items-center border border-white/10 text-base">${m.avatar}</div>
+            <div class="flex-1">
+              <div class="text-sm font-semibold ${m.isMe?'text-neon':''}">${m.name}</div>
+            </div>
+            ${m.isMe?'<div class="text-[10px] text-neon font-bold">VOCÊ</div>':''}
           </div>
         `).join('')}
       </div>
-
-      <button id="rg-save" class="btn-primary w-full py-3 rounded-2xl font-display tracking-widest mt-4">SALVAR PALPITES</button>
     </div>
   `);
-  $('#rg-save').addEventListener('click',()=>{
-    toast('📝 Palpites dos amigos registrados.','ok'); closeModal();
-  });
 }
 
+/* RECORD GUESS */
 /* ---------------- 11. ZOEIRA ---------------- */
 function renderZoeira(){
   const screen = $('[data-screen="zoeira"]');
@@ -2976,23 +2789,6 @@ function renderZoeira(){
             <div class="text-xs text-black/70 mt-2 font-bold">${c.s}</div>
             <div class="absolute bottom-3 right-3 text-3xl">${c.t==='GOAT'?'🐐':c.t==='VIDENTE'?'🔮':c.t==='PÉ FRIO'?'🥶':c.t==='COBRA-CEGA'?'🐍':c.t==='CRIMINOSO'?'🚓':'🤡'}</div>
           </button>
-        `).join('')}
-      </div>
-    </div>
-
-    <!-- Pós jogo -->
-    <div class="card p-4">
-      <div class="text-[10px] tracking-widest text-muted mb-2">REAÇÕES PÓS-JOGO</div>
-      <div class="space-y-2">
-        ${MOCK_FRIENDS.slice(0,3).map((f,i)=>`
-          <div class="flex items-start gap-2">
-            <div class="w-8 h-8 rounded-full bg-carbon border border-white/10 grid place-items-center">${f.avatar}</div>
-            <div class="flex-1">
-              <div class="text-xs font-bold">${f.name} <span class="text-muted font-normal">· ${timeAgo(Date.now()-i*3600000*2)}</span></div>
-              <div class="text-sm">${MEME_PHRASES[(i*3)%MEME_PHRASES.length]}</div>
-            </div>
-            <button class="text-xs text-muted">${REACTIONS[i]}</button>
-          </div>
         `).join('')}
       </div>
     </div>
@@ -3162,12 +2958,7 @@ function renderPerfil(){
             <span>Sair da conta</span>
             <span class="text-cherry">↪</span>
           </button>
-        ` : (window.FIREBASE_CONFIG ? '' : `
-          <div class="p-3 rounded-xl" style="background:rgba(0,229,255,.05); border:1px solid rgba(0,229,255,.2)">
-            <div class="text-[10px] text-cyan font-bold tracking-widest mb-1">MODO OFFLINE</div>
-            <div class="text-[11px] text-muted leading-snug">Pra sincronizar com amigos em tempo real, configure o Firebase. Veja o README.md do projeto.</div>
-          </div>
-        `)}
+        ` : ''}
         <label class="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5">
           <span>Notificações</span>
           <input type="checkbox" id="set-notifs" ${state.settings.notifs?'checked':''} class="accent-neon w-5 h-5" />
@@ -3505,9 +3296,7 @@ function refreshActiveScreen(){
 }
 
 /* Boot do app principal.
-   Quando Firebase está configurado, é chamado APÓS o usuário logar
-   (via auth-ui.js) OU se o usuário escolher "continuar offline".
-   Quando Firebase NÃO está configurado, é chamado imediatamente. */
+   Chamado por auth-ui.js após o usuário autenticar. */
 window._appBoot = function appBoot(){
   if (window._appBooted) return;
   window._appBooted = true;
@@ -3545,23 +3334,46 @@ async function syncFromCloud(){
       saveState();
     }
     // Atualiza lista de grupos em tempo real
-    window.CloudSync.subscribeMyGroups(groups => {
-      if(groups && groups.length){
-        // Merge com grupos locais (preserva _localStub se houver)
-        state.groups = groups.map(g => ({...g}));
-        if(!state.selectedGroupId && groups[0]) state.selectedGroupId = groups[0].id;
-        saveState(); refreshActiveScreen();
+    window.CloudSync.subscribeMyGroups(async groups => {
+      state.groups = (groups || []).map(g => ({...g}));
+      if(!state.selectedGroupId && state.groups[0]){
+        state.selectedGroupId = state.groups[0].id;
       }
+      // Se o grupo selecionado sumiu da lista, limpa seleção
+      if(state.selectedGroupId && !state.groups.find(g => g.id===state.selectedGroupId)){
+        state.selectedGroupId = state.groups[0]?.id || null;
+      }
+      saveState();
+
+      // Calcula pontos de cada membro pra mostrar no ranking
+      try{
+        const allMembers = new Set();
+        state.groups.forEach(g => (g.members||[]).forEach(u => allMembers.add(u)));
+        const me = window.CloudSync.getUid();
+        await Promise.all(Array.from(allMembers).map(async uid => {
+          const pts = await window.CloudSync.computeUserPoints(uid);
+          window._userCache = window._userCache || {};
+          window._userCache[uid] = window._userCache[uid] || {};
+          window._userCache[uid].points = pts;
+          if(uid === me){
+            state.user.points = pts;
+            saveState();
+          }
+        }));
+      }catch(e){ console.warn('Cálculo de pontos falhou:', e); }
+
+      renderHUD();
+      refreshActiveScreen();
     });
   }catch(e){ console.warn('Sync cloud falhou:', e); }
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
   if(!window.FIREBASE_CONFIG){
-    // Modo offline: boot imediato
+    // Boot imediato (sem auth)
     window._appBoot();
   }
-  // Se Firebase configurado: auth-ui.js cuida de boot após login.
+  // Com Firebase: auth-ui.js dispara o boot após login.
 });
 
 // Close modal when clicking backdrop
