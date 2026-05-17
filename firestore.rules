@@ -26,6 +26,23 @@ service cloud.firestore {
       allow update: if request.auth != null
                     && request.resource.data.diff(resource.data).affectedKeys()
                        .hasOnly(['members']);
+
+      // PALPITES DENTRO DO GRUPO
+      // - LEITURA: só membros do grupo veem
+      // - CRIAR/EDITAR: só o próprio usuário pode escrever (userId precisa bater com auth.uid)
+      // - O id do documento DEVE seguir o padrão {uid}_{matchId} pra evitar duplicação.
+      match /predictions/{predictionId} {
+        allow read: if request.auth != null
+                    && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.members;
+
+        allow create, update: if request.auth != null
+                              && request.auth.uid == request.resource.data.userId
+                              && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.members
+                              && predictionId == request.auth.uid + '_' + request.resource.data.matchId;
+
+        allow delete: if request.auth != null
+                      && request.auth.uid == resource.data.userId;
+      }
     }
 
     // PREDICTIONS: cada user escreve só os próprios; todos os logados leem
