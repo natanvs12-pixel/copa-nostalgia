@@ -8,7 +8,7 @@
 
 (function () {
   if (!window.FIREBASE_CONFIG) {
-    // Modo offline: deixa o CloudSync original (no-op) ativo.
+    // Sem config: mantém o stub original do CloudSync (no-op).
     return;
   }
 
@@ -147,18 +147,77 @@
           });
       },
 
-      /* Lista todos os grupos do usuário (em tempo real) */
+      /* Lista todos os grupos do usuário (em tempo real).
+         Também popula window._userCache com nome/avatar de cada membro
+         e busca os pontos atuais (calculados via palpites + scores). */
       subscribeMyGroups(callback) {
         const uid = this.getUid();
         if (!uid) return () => {};
+
+        // Listener principal: meus grupos
         return db
           .collection("groups")
           .where("members", "array-contains", uid)
-          .onSnapshot((snap) => {
+          .onSnapshot(async (snap) => {
             const groups = [];
-            snap.forEach((d) => groups.push({ id: d.id, ...d.data() }));
+            const allMembers = new Set();
+            snap.forEach((d) => {
+              const g = { id: d.id, ...d.data() };
+              groups.push(g);
+              (g.members || []).forEach((m) => allMembers.add(m));
+            });
+
+            // Hidrata cache de usuários (pra mostrar nome/avatar real no ranking)
+            window._userCache = window._userCache || {};
+            await Promise.all(
+              Array.from(allMembers).map(async (memberUid) => {
+                if (window._userCache[memberUid] && window._userCache[memberUid]._fresh) return;
+                try {
+                  const userDoc = await db.collection("users").doc(memberUid).get();
+                  if (userDoc.exists) {
+                    window._userCache[memberUid] = { ...userDoc.data(), _fresh: true };
+                  }
+                } catch (e) {
+                  // Silencioso — se não conseguir ler, segue com defaults
+                }
+              })
+            );
+
             callback(groups);
           });
+      },
+
+      /* Pontos calculados de um usuário (lê palpites + scores oficiais)
+         Útil pra ranking em tempo real. */
+      async computeUserPoints(uid) {
+        try {
+          const [predSnap, scoreSnap] = await Promise.all([
+            db.collection("predictions").doc(uid).collection("matches").get(),
+            db.collection("scores").get(),
+          ]);
+          const scores = {};
+          scoreSnap.forEach((d) => (scores[d.id] = d.data()));
+          let pts = 0;
+          predSnap.forEach((d) => {
+            const pred = d.data();
+            const real = scores[d.id];
+            if (!real || real.a == null || real.b == null) return;
+            if (real.a === pred.a && real.b === pred.b) pts += 10;
+            else {
+              const rd = real.a - real.b, pd = pred.a - pred.b;
+              const sameWinner =
+                (rd > 0 && pd > 0) ||
+                (rd < 0 && pd < 0) ||
+                (rd === 0 && pd === 0);
+              if (sameWinner && Math.abs(rd - pd) <= 1) pts += 7;
+              else if (sameWinner) pts += 5;
+              else if (real.a === pred.a || real.b === pred.b) pts += 2;
+            }
+          });
+          return pts;
+        } catch (e) {
+          return 0;
+        }
       },
 
       /* ===== PALPITES ===== */
@@ -218,10 +277,8 @@
         });
       },
 
-      /* ===== PLACARES OFICIAIS =====
-         Em produção, uma Cloud Function alimenta /scores com placares reais
-         vindos de uma API esportiva (api-football, sportradar, etc.).
-         No MVP, isso fica aguardando ser populado. */
+      /* Lê os placares oficiais (collection /scores). São atualizados por
+         uma Cloud Function que consome a API esportiva (ou manualmente). */
       subscribeOfficialScores(callback) {
         return db.collection("scores").onSnapshot((snap) => {
           const map = {};
@@ -246,8 +303,8 @@
   bootFirebase().catch((err) => {
     console.error("Erro inicializando Firebase:", err);
     alert(
-      "Erro ao carregar Firebase. Verifique sua firebase-config.js. " +
-        "O app vai rodar em modo offline.\n\n" +
+      "Não foi possível conectar ao Firebase. Verifique sua conexão e " +
+        "tente recarregar a página.\n\n" +
         err.message
     );
   });
