@@ -235,6 +235,81 @@
           });
       },
 
+      /* Salva o palpite dentro do grupo (visível pra todos os membros).
+         Usa ID composto userId_matchId pra garantir que um usuário só tenha
+         UM palpite por jogo dentro daquele grupo (atualiza, não duplica). */
+      async publishGroupPrediction(groupId, matchId, prediction, matchMeta) {
+        const uid = this.getUid();
+        if (!uid) throw new Error("Usuário não autenticado");
+        if (!groupId) throw new Error("Grupo inválido");
+
+        // Pega dados do usuário (pra mostrar nome/avatar no feed sem extra query)
+        let userName = "Membro";
+        let userAvatar = "🙂";
+        try {
+          const userDoc = await db.collection("users").doc(uid).get();
+          if (userDoc.exists) {
+            const u = userDoc.data();
+            userName = u.displayName || (u.email || "").split("@")[0] || userName;
+            userAvatar = u.avatar || userAvatar;
+          }
+        } catch (e) { /* segue com defaults */ }
+
+        const docId = `${uid}_${matchId}`;
+        const ref = db
+          .collection("groups").doc(groupId)
+          .collection("predictions").doc(docId);
+
+        // Verifica se já existe pra preservar createdAt
+        const existing = await ref.get();
+        const now = firebase.firestore.FieldValue.serverTimestamp();
+
+        const payload = {
+          groupId,
+          userId: uid,
+          userName,
+          userAvatar,
+          matchId,
+          timeA: matchMeta?.timeA || "",
+          timeB: matchMeta?.timeB || "",
+          flagA: matchMeta?.flagA || "",
+          flagB: matchMeta?.flagB || "",
+          placarA: prediction.a,
+          placarB: prediction.b,
+          matchDate: matchMeta?.matchDate || null,
+          stageLabel: matchMeta?.stageLabel || "",
+          updatedAt: now,
+        };
+        if (!existing.exists) {
+          payload.createdAt = now;
+        }
+
+        await ref.set(payload, { merge: true });
+        return payload;
+      },
+
+      /* Listener em tempo real dos palpites de um grupo.
+         Callback recebe array ordenado por updatedAt DESC. */
+      subscribeGroupActivity(groupId, callback) {
+        if (!groupId) return () => {};
+        return db
+          .collection("groups").doc(groupId)
+          .collection("predictions")
+          .orderBy("updatedAt", "desc")
+          .limit(200)
+          .onSnapshot(
+            (snap) => {
+              const items = [];
+              snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
+              callback(items);
+            },
+            (err) => {
+              console.error("subscribeGroupActivity error:", err);
+              callback(null, err);
+            }
+          );
+      },
+
       async loadMyPredictions() {
         const uid = this.getUid();
         if (!uid) return {};
