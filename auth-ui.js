@@ -1,14 +1,11 @@
 /* ============================================================
    BOLÃO BR — Tela de Login / Cadastro
    ============================================================
-   Aparece como overlay quando o Firebase está configurado mas
-   o usuário ainda não fez login.
-   Permite criar conta, entrar, recuperar senha e também
-   "continuar offline" (modo demo).
+   Overlay mostrado enquanto o usuário não está autenticado.
+   Permite criar conta, entrar e recuperar senha.
    ============================================================ */
 
 (function () {
-  // Se Firebase não configurado, não mostra tela de login (modo offline)
   if (!window.FIREBASE_CONFIG) return;
 
   function buildOverlay() {
@@ -169,9 +166,6 @@
           </div>
           <button type="submit" class="auth-btn-primary" id="signup-btn">CRIAR CONTA</button>
         </form>
-
-        <div class="auth-divider"></div>
-        <button class="auth-offline" id="offline-btn">Continuar sem login (modo offline)</button>
       </div>
     `;
     document.body.appendChild(div);
@@ -275,13 +269,6 @@
       }
     });
 
-    // Offline mode
-    overlay.querySelector("#offline-btn").addEventListener("click", () => {
-      // Marca como modo offline e deixa o app carregar
-      window._offlineMode = true;
-      overlay.remove();
-      if (window._appBoot) window._appBoot();
-    });
   }
 
   function closeOverlay() {
