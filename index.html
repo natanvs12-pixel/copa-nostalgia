@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -291,6 +290,241 @@ tailwind.config = {
     background:
       radial-gradient(400px 200px at 50% 0%, rgba(255,214,10,.25), transparent 70%),
       linear-gradient(180deg, #1a1a2e 0%, #0c0c1a 100%);
+  }
+
+  /* ===== GRUPOS PREMIUM ===== */
+  .group-premium{
+    position: relative;
+    background:
+      radial-gradient(280px 120px at 100% 0%, rgba(0,255,163,.08), transparent 60%),
+      radial-gradient(280px 120px at 0% 100%, rgba(255,45,135,.06), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 22px;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .group-premium:active{ transform: scale(.99); }
+  .group-premium.is-active{
+    border-color: rgba(0,255,163,.4);
+    box-shadow: 0 0 0 1px rgba(0,255,163,.3), 0 12px 40px rgba(0,255,163,.12);
+  }
+  .group-premium::before{
+    content:"";
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; height: 2px;
+    background: linear-gradient(90deg, transparent, #00ffa3 30%, #ffd60a 50%, #ff2d87 70%, transparent);
+    opacity: .5;
+  }
+
+  .live-badge{
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px;
+    background: rgba(255,45,135,.12);
+    border: 1px solid rgba(255,45,135,.4);
+    border-radius: 999px;
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 10px; letter-spacing: .15em;
+    color: #ff2d87;
+    animation: liveBadgePulse 2s ease-in-out infinite;
+  }
+  @keyframes liveBadgePulse{
+    0%, 100%{ box-shadow: 0 0 0 0 rgba(255,45,135,.4); }
+    50%{ box-shadow: 0 0 0 4px rgba(255,45,135,0); }
+  }
+
+  .sync-pill{
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    background: rgba(0,255,163,.08);
+    border: 1px solid rgba(0,255,163,.25);
+    border-radius: 999px;
+    font-size: 10px; letter-spacing: .1em;
+    color: #00ffa3;
+    font-weight: 700;
+  }
+  .sync-pill .sync-dot{
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #00ffa3;
+    box-shadow: 0 0 8px #00ffa3;
+    animation: syncBlink 1.5s ease-in-out infinite;
+  }
+  @keyframes syncBlink{
+    0%, 100%{ opacity: 1; }
+    50%{ opacity: .35; }
+  }
+
+  .avatar-stack{ display: flex; align-items: center; }
+  .avatar-stack .av{
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: #161f33;
+    border: 2px solid #050811;
+    display: grid; place-items: center;
+    font-size: 13px;
+    margin-left: -8px;
+  }
+  .avatar-stack .av:first-child{ margin-left: 0; }
+  .avatar-stack .av.more{
+    background: rgba(0,255,163,.15);
+    color: #00ffa3;
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .leader-card{
+    position: relative;
+    background:
+      radial-gradient(180px 90px at 50% 0%, rgba(255,214,10,.18), transparent 60%),
+      linear-gradient(180deg, rgba(255,214,10,.08) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid rgba(255,214,10,.3);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  .leader-card::before{
+    content: "👑";
+    position: absolute;
+    top: -10px; right: 12px;
+    font-size: 38px;
+    transform: rotate(15deg);
+    opacity: .6;
+    filter: drop-shadow(0 4px 8px rgba(255,214,10,.4));
+    animation: leaderFloat 3s ease-in-out infinite;
+  }
+  @keyframes leaderFloat{
+    0%, 100%{ transform: rotate(15deg) translateY(0); }
+    50%{ transform: rotate(15deg) translateY(-4px); }
+  }
+
+  .rank-row{
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+    border: 1px solid rgba(255,255,255,0.04);
+    transition: all .2s;
+  }
+  .rank-row.is-me{
+    background: linear-gradient(90deg, rgba(0,255,163,.08), rgba(0,255,163,.02));
+    border-color: rgba(0,255,163,.3);
+    box-shadow: 0 0 24px rgba(0,255,163,.08);
+  }
+  .rank-row.is-top{
+    background: linear-gradient(90deg, rgba(255,214,10,.08), rgba(255,214,10,.01));
+    border-color: rgba(255,214,10,.25);
+  }
+  .rank-pos{
+    width: 32px; height: 32px;
+    display: grid; place-items: center;
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 18px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    color: #7a8499;
+  }
+  .rank-pos.p1{ background: linear-gradient(180deg, #ffd60a, #f0a500); color: #1a0e02; box-shadow: 0 0 16px rgba(255,214,10,.5); }
+  .rank-pos.p2{ background: linear-gradient(180deg, #d4d4d8, #a1a1aa); color: #1a0e02; }
+  .rank-pos.p3{ background: linear-gradient(180deg, #cd7f32, #8b4513); color: #fff; }
+  .rank-avatar{
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #161f33, #0c1322);
+    border: 2px solid rgba(255,255,255,0.06);
+    display: grid; place-items: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .rank-row.is-me .rank-avatar{
+    border-color: rgba(0,255,163,.5);
+    box-shadow: 0 0 12px rgba(0,255,163,.3);
+  }
+  .rank-points{
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 22px; line-height: 1;
+    color: #e9ecf2;
+  }
+
+  .match-mini{
+    background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 12px;
+    transition: all .2s;
+  }
+  .match-mini:focus-within{
+    border-color: rgba(0,255,163,.4);
+    box-shadow: 0 0 24px rgba(0,255,163,.1);
+  }
+  .match-mini.is-live{
+    border-color: rgba(255,45,135,.4);
+    background:
+      radial-gradient(200px 80px at 50% 0%, rgba(255,45,135,.08), transparent 70%),
+      linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+  }
+  .score-mini-input{
+    width: 44px; height: 44px;
+    text-align: center;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: #e9ecf2;
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 22px;
+    padding: 0;
+    transition: all .2s;
+  }
+  .score-mini-input:focus{
+    outline: none;
+    border-color: #00ffa3;
+    background: rgba(0,255,163,.08);
+    box-shadow: 0 0 16px rgba(0,255,163,.25);
+  }
+  .score-mini-input::-webkit-outer-spin-button,
+  .score-mini-input::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+  .score-mini-input[type=number]{ -moz-appearance: textfield; }
+
+  .feed-item{
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 14px;
+    animation: feedSlideIn .4s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes feedSlideIn{
+    from{ opacity: 0; transform: translateX(-8px); }
+    to{ opacity: 1; transform: translateX(0); }
+  }
+
+  .champion-vote{
+    background:
+      radial-gradient(220px 120px at 50% 0%, rgba(255,214,10,.18), transparent 60%),
+      linear-gradient(180deg, rgba(255,214,10,.04), rgba(255,255,255,.01));
+    border: 1px solid rgba(255,214,10,.25);
+    border-radius: 18px;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+  }
+  .champion-vote:active{ transform: scale(.97); }
+  .champion-vote.selected{
+    background:
+      radial-gradient(220px 120px at 50% 0%, rgba(255,214,10,.3), transparent 60%),
+      linear-gradient(180deg, rgba(255,214,10,.12), rgba(255,255,255,.02));
+    border-color: rgba(255,214,10,.6);
+    box-shadow: 0 0 24px rgba(255,214,10,.3);
+  }
+  .champion-vote .vote-bar{
+    height: 4px; background: rgba(255,255,255,.06);
+    border-radius: 2px; overflow: hidden;
+    margin-top: 6px;
+  }
+  .champion-vote .vote-bar-fill{
+    height: 100%;
+    background: linear-gradient(90deg, #ffd60a, #f0a500);
+    transition: width .8s cubic-bezier(.22,1,.36,1);
   }
 
   /* ===== TABELA NOSTÁLGICA (papel kraft/jornal antigo) ===== */
@@ -2331,25 +2565,44 @@ document.addEventListener('click', e=>{
 function renderGrupos(){
   const screen = $('[data-screen="grupos"]');
   const groups = state.groups;
+  const isOnline = window.CloudSync && window.CloudSync.isOnline && window.CloudSync.isOnline();
+  const liveMatches = MATCHES.filter(m=>matchStatus(m)==='live').length;
+  const todayMatches = MATCHES.filter(m=>{
+    const d = new Date(m.date);
+    const now = new Date();
+    return d.toDateString() === now.toDateString();
+  }).length;
 
   screen.innerHTML = `
+    <!-- Header com sync status -->
     <div class="flex items-center justify-between">
-      <h1 class="font-display text-3xl tracking-wider">GRUPOS</h1>
+      <div>
+        <h1 class="font-display text-3xl tracking-wider leading-none">GRUPOS</h1>
+        <div class="flex items-center gap-2 mt-1.5">
+          ${isOnline ? `
+            <span class="sync-pill"><span class="sync-dot"></span> SINCRONIZADO</span>
+          ` : `
+            <span class="text-[10px] text-muted">conectando...</span>
+          `}
+          ${liveMatches > 0 ? `<span class="live-badge"><span class="live-dot"></span> ${liveMatches} AO VIVO</span>` : ''}
+        </div>
+      </div>
       <div class="flex gap-2">
         <button class="btn-ghost px-3 py-2 rounded-xl text-xs font-bold" onclick="openJoinGroupModal()">🔗 ENTRAR</button>
         <button class="btn-primary px-3 py-2 rounded-xl text-xs font-bold" onclick="openCreateGroupModal()">+ NOVO</button>
       </div>
     </div>
-    <div class="text-sm text-muted">Crie um grupo e compartilhe o <span class="text-neon font-bold">código</span> com seus amigos — todos competem em tempo real.</div>
 
     ${groups.length === 0 ? `
-      <div class="card-elev p-6 text-center">
-        <div class="text-5xl mb-3">⚽</div>
-        <div class="font-display text-xl mb-2">VOCÊ AINDA NÃO TEM GRUPOS</div>
-        <div class="text-sm text-muted mb-5">Crie um grupo e chame a galera, ou entre num que já existe com um código.</div>
-        <div class="grid grid-cols-2 gap-2">
-          <button class="py-3 rounded-xl btn-primary text-sm font-bold" onclick="openCreateGroupModal()">+ Criar grupo</button>
-          <button class="py-3 rounded-xl btn-ghost text-sm font-bold" onclick="openJoinGroupModal()">🔗 Entrar com código</button>
+      <div class="card-elev p-7 text-center empty-state-glow relative">
+        <div class="relative z-10">
+          <div class="text-6xl mb-3">⚽</div>
+          <div class="font-display text-2xl mb-2">VOCÊ AINDA NÃO TEM GRUPOS</div>
+          <div class="text-sm text-muted mb-5 max-w-xs mx-auto">Crie um grupo e chame a galera — todos competem em tempo real, igual Cartola.</div>
+          <div class="grid grid-cols-2 gap-2 max-w-xs mx-auto">
+            <button class="py-3 rounded-xl btn-primary text-sm font-bold" onclick="openCreateGroupModal()">+ Criar</button>
+            <button class="py-3 rounded-xl btn-ghost text-sm font-bold" onclick="openJoinGroupModal()">🔗 Entrar</button>
+          </div>
         </div>
       </div>
     ` : ''}
@@ -2362,49 +2615,77 @@ function renderGrupos(){
         const selected = g.id===state.selectedGroupId;
         const code = g.code || 'BR-XXXX';
         const memberCount = (g.members||[]).length;
+        const leader = ranking[0];
+        const mePoints = meIdx>=0 ? ranking[meIdx].points : 0;
+        // Avatares (até 4 + contador)
+        const avatars = ranking.slice(0,4);
+        const extra = Math.max(0, memberCount - 4);
+
         return `
-          <div class="card-elev p-4 ${selected?'border-neon/40':''}">
+          <div class="group-premium p-4 ${selected?'is-active':''}" onclick="openGroupDetailModal('${g.id}')">
+            <!-- Header: emoji + nome + ativo -->
             <div class="flex items-center gap-3">
               <div class="w-14 h-14 rounded-2xl grid place-items-center text-3xl border border-white/10" style="background:linear-gradient(135deg, ${g.color}30, transparent)">
                 ${g.emoji}
               </div>
               <div class="flex-1 min-w-0">
                 <div class="font-display text-xl leading-tight truncate">${g.name}</div>
-                <div class="text-xs text-muted">${memberCount} membro${memberCount>1?'s':''}${typeof meRank==='number'?' · você é o '+meRank+'º':''}</div>
+                <div class="flex items-center gap-2 mt-1">
+                  <div class="avatar-stack">
+                    ${avatars.map(u=>`<div class="av">${u.avatar}</div>`).join('')}
+                    ${extra>0?`<div class="av more">+${extra}</div>`:''}
+                  </div>
+                  <span class="text-[10px] text-muted">${memberCount} membro${memberCount>1?'s':''}</span>
+                </div>
               </div>
-              <button onclick="selectGroup('${g.id}')" class="px-3 py-1.5 rounded-full text-[11px] font-bold ${selected?'bg-neon text-black':'btn-ghost'}">
-                ${selected?'★ Ativo':'Ativar'}
+              <button onclick="event.stopPropagation(); selectGroup('${g.id}')" class="px-3 py-1.5 rounded-full text-[11px] font-bold ${selected?'bg-neon text-black':'btn-ghost'}">
+                ${selected?'★':'Ativar'}
               </button>
             </div>
 
-            <!-- Group code (shareable) -->
-            <div class="mt-3 flex items-center gap-2 p-2.5 rounded-xl" style="background:rgba(0,255,163,.06); border:1px dashed rgba(0,255,163,.35)">
-              <div class="text-[9px] text-muted tracking-widest leading-none">CÓDIGO DO GRUPO</div>
-              <div class="flex-1 font-display text-lg tracking-widest text-neon text-center">${code}</div>
-              <button onclick="copyCode('${code}')" class="px-2 py-1.5 rounded-lg btn-ghost text-[10px] font-bold">📋</button>
-              <button onclick="shareCode('${code}','${g.name.replace(/'/g,'')}')" class="px-2 py-1.5 rounded-lg btn-ghost text-[10px] font-bold">📤</button>
+            <!-- Stats rápido -->
+            <div class="grid grid-cols-3 gap-2 mt-4">
+              <div class="bg-ink/50 rounded-xl py-2 text-center border border-white/5">
+                <div class="font-display text-xl text-neon leading-none">${typeof meRank==='number'?meRank+'º':'—'}</div>
+                <div class="text-[9px] text-muted tracking-widest mt-0.5">SUA POS.</div>
+              </div>
+              <div class="bg-ink/50 rounded-xl py-2 text-center border border-white/5">
+                <div class="font-display text-xl text-bone leading-none">${mePoints}</div>
+                <div class="text-[9px] text-muted tracking-widest mt-0.5">PONTOS</div>
+              </div>
+              <div class="bg-ink/50 rounded-xl py-2 text-center border border-white/5">
+                <div class="font-display text-xl text-gold leading-none">${leader?.points||0}</div>
+                <div class="text-[9px] text-muted tracking-widest mt-0.5">LÍDER</div>
+              </div>
             </div>
 
-            <div class="mt-3 space-y-1.5">
-              ${ranking.slice(0,5).map((u,i)=>{
-                const isMe = u.id===myUid() || u.id==='me';
-                return `
-                <div class="flex items-center gap-3 px-2 py-2 rounded-xl ${isMe?'bg-neon/5 border border-neon/20':''}">
-                  <div class="w-5 font-display text-base text-center ${i===0?'text-gold':i===1?'text-bone':i===2?'text-cherry':'text-muted'}">${i+1}</div>
-                  <div class="w-8 h-8 rounded-full bg-carbon grid place-items-center text-base border border-white/10">${u.avatar}</div>
-                  <div class="flex-1 truncate text-sm font-semibold ${isMe?'text-neon':''}">${u.name}${isMe?' (você)':''}</div>
-                  ${u.title?`<div class="text-[9px] text-muted italic">${u.title}</div>`:''}
-                  <div class="font-display text-lg">${u.points}</div>
+            <!-- Líder em destaque -->
+            ${leader ? `
+              <div class="leader-card p-3 mt-3 relative">
+                <div class="text-[9px] tracking-widest text-gold font-bold relative z-10">LÍDER DO BOLÃO</div>
+                <div class="flex items-center gap-3 mt-1 relative z-10">
+                  <div class="rank-avatar" style="border-color:rgba(255,214,10,.6); box-shadow:0 0 16px rgba(255,214,10,.3)">${leader.avatar}</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-bold text-bone truncate">${leader.name}${(leader.id===myUid()||leader.id==='me')?' (você)':''}</div>
+                    <div class="text-[10px] text-muted">${leader.points} pontos</div>
+                  </div>
+                  <div class="font-display text-3xl text-gold leading-none">${leader.points}</div>
                 </div>
-                `;
-              }).join('')}
+              </div>
+            ` : ''}
+
+            <!-- Group code -->
+            <div class="mt-3 flex items-center gap-2 p-2.5 rounded-xl" style="background:rgba(0,255,163,.06); border:1px dashed rgba(0,255,163,.35)">
+              <div class="text-[9px] text-muted tracking-widest leading-none">CÓDIGO</div>
+              <div class="flex-1 font-display text-lg tracking-widest text-neon text-center">${code}</div>
+              <button onclick="event.stopPropagation(); copyCode('${code}')" class="px-2 py-1.5 rounded-lg btn-ghost text-[10px] font-bold">📋</button>
+              <button onclick="event.stopPropagation(); shareCode('${code}','${g.name.replace(/'/g,'')}')" class="px-2 py-1.5 rounded-lg btn-ghost text-[10px] font-bold">📤</button>
             </div>
 
-            <div class="flex items-center gap-2 mt-4">
-              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="openAddFriendModal('${g.id}')">👥 Membros</button>
-              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="shareCode('${g.code||''}','${g.name.replace(/'/g,'')}')">📤 Convidar</button>
-              <button class="flex-1 py-2 rounded-xl btn-ghost text-xs font-bold" onclick="openShareModal('group','${g.id}')">🎨 Card</button>
-            </div>
+            <!-- CTA principal: abrir grupo -->
+            <button class="mt-3 w-full py-3 rounded-2xl btn-primary font-display tracking-widest text-sm" onclick="event.stopPropagation(); openGroupDetailModal('${g.id}')">
+              ENTRAR NO BOLÃO ›
+            </button>
           </div>
         `;
       }).join('')}
@@ -2423,11 +2704,502 @@ function renderGrupos(){
   `;
 }
 
+/* ============================================================
+   MODAL DE DETALHE DO GRUPO
+   3 seções: Jogos do dia (palpite inline) · Ranking premium · Bolão Longo Prazo
+   ============================================================ */
+function openGroupDetailModal(groupId){
+  const g = state.groups.find(x=>x.id===groupId);
+  if(!g) return;
+
+  // Define como grupo ativo se ainda não estiver
+  if(state.selectedGroupId !== g.id){
+    state.selectedGroupId = g.id; saveState();
+  }
+
+  // Aba ativa padrão: jogos
+  window._groupDetailTab = window._groupDetailTab || 'matches';
+  renderGroupDetailContent(g);
+}
+
+function renderGroupDetailContent(g){
+  const tab = window._groupDetailTab || 'matches';
+  const ranking = buildGroupRanking(g);
+  const memberCount = (g.members||[]).length;
+  const liveCount = MATCHES.filter(m=>matchStatus(m)==='live').length;
+
+  openModal(`
+    <div class="px-5 pt-5 pb-8">
+      <!-- Header do modal -->
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <span class="sync-pill"><span class="sync-dot"></span> AO VIVO</span>
+          ${liveCount>0?`<span class="live-badge"><span class="live-dot"></span> ${liveCount} JOGO${liveCount>1?'S':''}</span>`:''}
+        </div>
+        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+      </div>
+
+      <!-- Identidade do grupo -->
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-16 h-16 rounded-2xl grid place-items-center text-4xl border border-white/10" style="background:linear-gradient(135deg, ${g.color}40, transparent)">
+          ${g.emoji}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="font-display text-2xl leading-tight truncate">${g.name}</div>
+          <div class="text-xs text-muted">${memberCount} ${memberCount>1?'jogadores':'jogador'} · ${g.code||''}</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="grid grid-cols-3 gap-1 p-1 rounded-xl mb-4" style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.05)">
+        ${[
+          {k:'matches', l:'⚽ JOGOS'},
+          {k:'ranking', l:'🏆 RANKING'},
+          {k:'champion', l:'👑 LONGO PRAZO'}
+        ].map(t=>`
+          <button onclick="setGroupDetailTab('${g.id}','${t.k}')"
+                  class="py-2 rounded-lg text-[10px] font-bold tracking-wider ${tab===t.k?'bg-neon text-black':'text-muted'}">
+            ${t.l}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- Conteúdo da aba -->
+      <div id="group-tab-content">
+        ${tab==='matches' ? renderGroupMatches(g) :
+          tab==='ranking' ? renderGroupRanking(g, ranking) :
+          renderGroupChampionVote(g)}
+      </div>
+    </div>
+  `);
+}
+
+function setGroupDetailTab(groupId, tab){
+  window._groupDetailTab = tab;
+  const g = state.groups.find(x=>x.id===groupId);
+  if(g) renderGroupDetailContent(g);
+}
+
+/* ===== SEÇÃO 1: JOGOS DO DIA (palpite inline) ===== */
+function renderGroupMatches(g){
+  const now = new Date();
+  const today = now.toDateString();
+
+  // Jogos: hoje (ao vivo + próximos do dia) + próximos 3 não-de-hoje
+  const todayMatches = MATCHES.filter(m=>{
+    if(!m.a || !m.b) return false;
+    return new Date(m.date).toDateString() === today;
+  });
+  const upcomingMatches = MATCHES.filter(m=>{
+    if(!m.a || !m.b) return false;
+    if(matchStatus(m) !== 'upcoming') return false;
+    return new Date(m.date).toDateString() !== today;
+  }).slice(0, 5);
+
+  // Últimos palpites do grupo (feed)
+  const feed = (g._activityFeed || state._localFeed?.[g.id] || []).slice(-5).reverse();
+
+  return `
+    ${todayMatches.length > 0 ? `
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-display tracking-wider text-base">JOGOS DE HOJE</h3>
+          <span class="text-[10px] text-muted">${todayMatches.length} jogo${todayMatches.length>1?'s':''}</span>
+        </div>
+        <div class="space-y-2">
+          ${todayMatches.map(m => renderInlineMatchCard(m)).join('')}
+        </div>
+      </div>
+    ` : `
+      <div class="card p-4 text-center text-sm text-muted mb-4">
+        🍿 Sem jogos hoje. Os próximos estão aí embaixo.
+      </div>
+    `}
+
+    ${upcomingMatches.length > 0 ? `
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-display tracking-wider text-base">PRÓXIMOS</h3>
+          <span class="text-[10px] text-muted">palpite até 30min antes</span>
+        </div>
+        <div class="space-y-2">
+          ${upcomingMatches.map(m => renderInlineMatchCard(m)).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    <!-- Feed de atividade -->
+    ${feed.length > 0 ? `
+      <div class="mb-2">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-display tracking-wider text-base">FEED DO GRUPO</h3>
+          <span class="text-[10px] text-muted">últimos palpites</span>
+        </div>
+        <div class="space-y-2">
+          ${feed.map(f => `
+            <div class="feed-item">
+              <div class="rank-avatar" style="width:32px;height:32px;font-size:14px">${f.avatar||'⚽'}</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-xs"><span class="font-bold text-bone">${f.name}</span> palpitou <span class="font-bold text-neon">${f.a} x ${f.b}</span></div>
+                <div class="text-[10px] text-muted">${f.match} · ${timeAgo(f.ts)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : ''}
+  `;
+}
+
+function renderInlineMatchCard(m){
+  const tA = teamById(m.a), tB = teamById(m.b);
+  if(!tA || !tB) return '';
+  const pal = state.predictions[m.id];
+  const status = matchStatus(m);
+  const isLive = status==='live';
+  const isFinal = status==='final';
+  const isUpcoming = status==='upcoming';
+
+  const d = new Date(m.date);
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+
+  return `
+    <div class="match-mini ${isLive?'is-live':''}" id="match-mini-${m.id}">
+      <div class="flex items-center justify-between text-[10px] mb-2">
+        <span class="text-muted tracking-wider">${matchStageLabel(m)}</span>
+        ${isLive ? '<span class="live-badge"><span class="live-dot"></span> AO VIVO</span>' :
+          isFinal ? '<span class="text-muted">ENCERRADO</span>' :
+          `<span class="text-bone font-bold">${hh}:${mm}</span>`}
+      </div>
+
+      <div class="grid grid-cols-[1fr,auto,1fr] gap-3 items-center">
+        <!-- Time A -->
+        <div class="text-center">
+          <div class="text-3xl">${tA.flag}</div>
+          <div class="text-[11px] mt-1 font-bold truncate">${tA.name}</div>
+        </div>
+
+        <!-- Centro: placar ou input -->
+        ${isUpcoming ? `
+          <div class="flex items-center gap-1">
+            <input type="number" min="0" max="20" inputmode="numeric"
+                   class="score-mini-input" data-match="${m.id}" data-side="a"
+                   value="${pal?.a ?? ''}"
+                   placeholder="0"
+                   onchange="onInlineScoreChange('${m.id}')" />
+            <span class="text-muted font-display text-xl">×</span>
+            <input type="number" min="0" max="20" inputmode="numeric"
+                   class="score-mini-input" data-match="${m.id}" data-side="b"
+                   value="${pal?.b ?? ''}"
+                   placeholder="0"
+                   onchange="onInlineScoreChange('${m.id}')" />
+          </div>
+        ` : m.score ? `
+          <div class="text-center">
+            <div class="font-display text-3xl ${isLive?'text-cherry':''}">
+              ${m.score.a} <span class="text-muted text-xl">·</span> ${m.score.b}
+            </div>
+            ${isLive ? `<div class="text-[10px] text-cherry font-bold mt-0.5">⚡ ${matchMinute(m)}ʹ</div>` : ''}
+          </div>
+        ` : `
+          <div class="text-center">
+            <div class="font-display text-2xl text-muted">VS</div>
+          </div>
+        `}
+
+        <!-- Time B -->
+        <div class="text-center">
+          <div class="text-3xl">${tB.flag}</div>
+          <div class="text-[11px] mt-1 font-bold truncate">${tB.name}</div>
+        </div>
+      </div>
+
+      ${isUpcoming ? `
+        <button class="mt-3 w-full py-2.5 rounded-xl text-xs font-bold transition-all ${pal?'btn-ghost text-neon':'btn-primary'}"
+                onclick="saveInlinePrediction('${m.id}')">
+          ${pal ? `✓ PALPITE SALVO: ${pal.a} × ${pal.b} · EDITAR` : '🎯 REGISTRAR PALPITE'}
+        </button>
+      ` : pal ? `
+        <div class="mt-3 flex items-center justify-between text-[11px] px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10">
+          <span class="text-muted">Seu palpite: <span class="font-bold text-bone">${pal.a} × ${pal.b}</span></span>
+          ${isFinal && m.score ? (()=>{
+            const pts = score(m.score, pal);
+            return `<span class="font-bold ${pts>=7?'text-neon':pts>0?'text-gold':'text-cherry'}">${pts>0?`+${pts} pts`:'0 pts'}</span>`;
+          })() : ''}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+/* Handler do input — só atualiza visual, não salva ainda */
+function onInlineScoreChange(matchId){
+  // Validação leve
+  const a = document.querySelector(`[data-match="${matchId}"][data-side="a"]`);
+  const b = document.querySelector(`[data-match="${matchId}"][data-side="b"]`);
+  if(a){ a.value = Math.max(0, Math.min(20, parseInt(a.value)||0)); }
+  if(b){ b.value = Math.max(0, Math.min(20, parseInt(b.value)||0)); }
+}
+
+/* Botão SALVAR PALPITE inline */
+function saveInlinePrediction(matchId){
+  const aEl = document.querySelector(`[data-match="${matchId}"][data-side="a"]`);
+  const bEl = document.querySelector(`[data-match="${matchId}"][data-side="b"]`);
+  if(!aEl || !bEl){ toast('Erro ao salvar.','err'); return; }
+  const a = parseInt(aEl.value);
+  const b = parseInt(bEl.value);
+  if(isNaN(a) || isNaN(b)){ toast('Preencha o placar.','warn'); return; }
+
+  const prediction = { a, b, ts: Date.now() };
+  state.predictions[matchId] = prediction;
+  saveState();
+
+  // Adiciona ao feed local do grupo ativo
+  const g = state.groups.find(x=>x.id===state.selectedGroupId);
+  if(g){
+    state._localFeed = state._localFeed || {};
+    state._localFeed[g.id] = state._localFeed[g.id] || [];
+    const m = MATCHES.find(x=>x.id===matchId);
+    const tA = m ? teamById(m.a) : null;
+    const tB = m ? teamById(m.b) : null;
+    state._localFeed[g.id].push({
+      name: state.user.name + ' (você)',
+      avatar: state.user.avatar,
+      a, b,
+      match: tA && tB ? `${tA.flag} ${tA.name} × ${tB.name} ${tB.flag}` : '',
+      ts: Date.now()
+    });
+    // Limita a 20 itens
+    if(state._localFeed[g.id].length > 20){
+      state._localFeed[g.id] = state._localFeed[g.id].slice(-20);
+    }
+    saveState();
+  }
+
+  // Sincroniza com Firestore
+  if(window.CloudSync && window.CloudSync.publishPrediction){
+    window.CloudSync.publishPrediction(matchId, prediction);
+  }
+
+  toast(`✅ Palpite salvo: <span class="font-display">${a} × ${b}</span>`,'ok');
+  confetti();
+
+  // Re-renderiza o conteúdo da aba
+  if(g) renderGroupDetailContent(g);
+}
+
+/* ===== SEÇÃO 2: RANKING PREMIUM ===== */
+function renderGroupRanking(g, ranking){
+  const me = myUid();
+  const leader = ranking[0];
+
+  if(ranking.length === 0){
+    return `
+      <div class="card p-6 text-center">
+        <div class="text-4xl mb-2">📊</div>
+        <div class="text-sm text-muted">Ainda sem dados de ranking.</div>
+      </div>
+    `;
+  }
+
+  return `
+    <!-- Pódio do líder -->
+    ${leader ? `
+      <div class="leader-card p-5 mb-4 text-center">
+        <div class="text-[10px] tracking-widest text-gold font-bold relative z-10">👑 LÍDER ABSOLUTO</div>
+        <div class="text-5xl mt-2 mb-1 relative z-10">${leader.avatar}</div>
+        <div class="font-display text-2xl relative z-10">${leader.name}${(leader.id===me)?' (você)':''}</div>
+        <div class="font-display text-5xl text-gold mt-2 leading-none shimmer-text relative z-10">${leader.points}</div>
+        <div class="text-[10px] text-muted tracking-widest mt-1 relative z-10">PONTOS</div>
+      </div>
+    ` : ''}
+
+    <!-- Ranking completo -->
+    <div class="space-y-1.5">
+      ${ranking.map((u, i) => {
+        const isMe = u.id===me || u.id==='me';
+        const isTop = i===0;
+        return `
+          <div class="rank-row ${isMe?'is-me':''} ${isTop?'is-top':''}">
+            <div class="rank-pos ${i===0?'p1':i===1?'p2':i===2?'p3':''}">${i+1}</div>
+            <div class="rank-avatar">${u.avatar}</div>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold text-sm truncate ${isMe?'text-neon':''}">${u.name}${isMe?' (você)':''}</div>
+              ${u.title?`<div class="text-[9px] text-muted italic">${u.title}</div>`:''}
+            </div>
+            <div class="rank-points">${u.points}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+/* ===== SEÇÃO 3: BOLÃO LONGO PRAZO (escolher campeão + ver votação) ===== */
+function renderGroupChampionVote(g){
+  const me = myUid();
+  const myChampion = state.longterm?.champion;
+
+  // Computa votação: pra cada membro, lê o palpite de campeão (se houver no _userCache)
+  const votes = {};  // teamId -> [{uid, avatar, name}]
+  const totalMembers = (g.members||[]).length;
+  let totalVotes = 0;
+
+  (g.members||[]).forEach(uid => {
+    let champion = null;
+    if(uid === me){
+      champion = myChampion;
+    } else {
+      const cached = window._userCache && window._userCache[uid];
+      champion = cached?.championPick || null;
+    }
+    if(champion){
+      totalVotes++;
+      votes[champion] = votes[champion] || [];
+      const cached = window._userCache && window._userCache[uid];
+      votes[champion].push({
+        uid,
+        avatar: uid===me ? state.user.avatar : (cached?.avatar || '🙂'),
+        name: uid===me ? state.user.name : (cached?.displayName || 'Membro'),
+        isMe: uid===me
+      });
+    }
+  });
+
+  // Times com pelo menos 1 voto, ordenados por contagem
+  const votedTeams = Object.keys(votes)
+    .map(tid => ({ team: teamById(tid), team_id: tid, voters: votes[tid] }))
+    .filter(x => x.team)
+    .sort((a,b) => b.voters.length - a.voters.length);
+
+  // Top 8 times pra votar (favoritos + os já votados)
+  const topTeams = TEAMS.slice(0, 12);
+
+  return `
+    <!-- Header -->
+    <div class="champion-vote mb-4" style="cursor:default">
+      <div class="text-3xl mb-1">🏆</div>
+      <div class="font-display text-xl leading-tight">QUEM LEVA A TAÇA?</div>
+      <div class="text-xs text-muted mt-1">Vote no seu campeão · Bônus de <span class="text-gold font-bold">+250 pts</span> se acertar</div>
+    </div>
+
+    <!-- Sua escolha atual -->
+    ${myChampion ? (() => {
+      const t = teamById(myChampion);
+      return t ? `
+        <div class="card p-3 mb-4 flex items-center gap-3" style="background:rgba(0,255,163,.06); border:1px solid rgba(0,255,163,.25)">
+          <div class="text-3xl">${t.flag}</div>
+          <div class="flex-1">
+            <div class="text-[10px] text-neon tracking-widest font-bold">SEU CAMPEÃO</div>
+            <div class="font-display text-lg">${t.name}</div>
+          </div>
+          <span class="text-[10px] text-muted">${state.longterm.locked?'🔒 travado':'editável'}</span>
+        </div>
+      ` : '';
+    })() : `
+      <div class="card p-3 mb-4 text-center">
+        <div class="text-xs text-muted">Escolha um time abaixo pra registrar seu palpite de campeão.</div>
+      </div>
+    `}
+
+    <!-- Grid de votação -->
+    <div class="mb-4">
+      <h3 class="font-display tracking-wider text-base mb-2">ESCOLHA SEU CAMPEÃO</h3>
+      <div class="grid grid-cols-3 gap-2">
+        ${topTeams.map(t => {
+          const isSelected = myChampion === t.id;
+          const voteCount = votes[t.id]?.length || 0;
+          const pct = totalMembers > 0 ? Math.round((voteCount/totalMembers)*100) : 0;
+          return `
+            <button class="champion-vote ${isSelected?'selected':''}"
+                    onclick="setChampionPick('${t.id}')">
+              <div class="text-2xl">${t.flag}</div>
+              <div class="text-[11px] font-bold leading-tight truncate mt-1">${t.name}</div>
+              ${voteCount > 0 ? `
+                <div class="text-[9px] text-gold font-bold mt-1">${voteCount} VOTO${voteCount>1?'S':''}</div>
+                <div class="vote-bar">
+                  <div class="vote-bar-fill" style="width:${pct}%"></div>
+                </div>
+              ` : `
+                <div class="text-[9px] text-muted mt-1">${state.longterm.locked&&isSelected?'🔒 SEU VOTO':' '}</div>
+              `}
+            </button>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Painel de votos do grupo -->
+    ${votedTeams.length > 0 ? `
+      <div>
+        <h3 class="font-display tracking-wider text-base mb-2">VOTOS DO GRUPO · ${totalVotes}/${totalMembers}</h3>
+        <div class="space-y-2">
+          ${votedTeams.map(v => {
+            const pct = totalMembers > 0 ? Math.round((v.voters.length/totalMembers)*100) : 0;
+            return `
+              <div class="card p-3">
+                <div class="flex items-center gap-3 mb-2">
+                  <div class="text-2xl">${v.team.flag}</div>
+                  <div class="flex-1">
+                    <div class="font-bold text-sm">${v.team.name}</div>
+                    <div class="text-[10px] text-muted">${v.voters.length} ${v.voters.length>1?'pessoas':'pessoa'} apostaram</div>
+                  </div>
+                  <div class="font-display text-2xl text-gold">${pct}%</div>
+                </div>
+                <div class="vote-bar" style="height:6px">
+                  <div class="vote-bar-fill" style="width:${pct}%"></div>
+                </div>
+                <div class="avatar-stack mt-2">
+                  ${v.voters.slice(0,6).map(voter => `<div class="av" title="${voter.name}">${voter.avatar}</div>`).join('')}
+                  ${v.voters.length>6?`<div class="av more">+${v.voters.length-6}</div>`:''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    ` : `
+      <div class="card p-5 text-center">
+        <div class="text-4xl mb-2">🗳️</div>
+        <div class="text-sm text-muted">Seja o primeiro do grupo a votar!</div>
+      </div>
+    `}
+
+    <button class="w-full mt-4 py-3 rounded-2xl btn-ghost text-xs font-bold" onclick="openLongTermModal()">
+      🎯 PALPITAR VICE / ARTILHEIRO / SURPRESA
+    </button>
+  `;
+}
+
+/* Voto rápido em campeão direto da tela do grupo */
+function setChampionPick(teamId){
+  state.longterm = state.longterm || { champion:null, vice:null, topScorer:null, surprise:null, locked:false };
+  if(state.longterm.locked){
+    toast('🔒 Seu palpite de longo prazo já foi travado.','warn');
+    return;
+  }
+  state.longterm.champion = teamId;
+  saveState();
+
+  // Sincroniza com Firestore (campo championPick no /users/{uid})
+  if(window.CloudSync && window.CloudSync.updateProfile){
+    window.CloudSync.updateProfile({ championPick: teamId }).catch(()=>{});
+  }
+
+  const t = teamById(teamId);
+  toast(`🏆 Campeão: ${t.flag} ${t.name}!`,'ok');
+
+  // Re-renderiza
+  const g = state.groups.find(x=>x.id===state.selectedGroupId);
+  if(g) renderGroupDetailContent(g);
+}
+
 function myUid(){
   return (window.CloudSync && window.CloudSync.getUid && window.CloudSync.getUid()) || 'me';
 }
 
-/* Cache de usuários do Firestore (preenchido por subscribeGroupMembers) */
+/* Cache de usuários do Firestore (preenchido por subscribeMyGroups) */
 window._userCache = window._userCache || {};
 
 function buildGroupRanking(g){
