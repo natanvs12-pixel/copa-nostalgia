@@ -1238,6 +1238,8 @@ window.CloudSync = window.CloudSync || {
   async leaveGroup(){},
   subscribeMyGroups(){ return ()=>{}; },
   async publishPrediction(){},
+  async publishGroupPrediction(){ return null; },
+  subscribeGroupActivity(){ return ()=>{}; },
   async loadMyPredictions(){ return {}; },
   subscribeGroupPredictions(){ return ()=>{}; },
   subscribeOfficialScores(){ return ()=>{}; },
@@ -2732,11 +2734,11 @@ function renderGroupDetailContent(g){
     <div class="px-5 pt-5 pb-8">
       <!-- Header do modal -->
       <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-2">
-          <span class="sync-pill"><span class="sync-dot"></span> AO VIVO</span>
+        <div class="flex items-center gap-2" data-sync-pill>
+          ${renderSyncPill()}
           ${liveCount>0?`<span class="live-badge"><span class="live-dot"></span> ${liveCount} JOGO${liveCount>1?'S':''}</span>`:''}
         </div>
-        <button onclick="closeModal()" class="text-muted text-2xl leading-none">×</button>
+        <button onclick="closeGroupDetailModal()" class="text-muted text-2xl leading-none">×</button>
       </div>
 
       <!-- Identidade do grupo -->
@@ -2772,6 +2774,48 @@ function renderGroupDetailContent(g){
       </div>
     </div>
   `);
+
+  // Inicia listener em tempo real dos palpites do grupo
+  startGroupActivityListener(g.id);
+}
+
+/* Listener em tempo real do grupo aberto. Mantém um único ativo. */
+function startGroupActivityListener(groupId){
+  // Cancela listener anterior se existir
+  if(window._groupActivityUnsub){
+    try{ window._groupActivityUnsub(); }catch(e){}
+    window._groupActivityUnsub = null;
+  }
+  if(!window.CloudSync || !window.CloudSync.subscribeGroupActivity) return;
+
+  window._groupActivityCache = window._groupActivityCache || {};
+  setSyncStatus('syncing');
+
+  window._groupActivityUnsub = window.CloudSync.subscribeGroupActivity(groupId, (items, err) => {
+    if(err){
+      setSyncStatus('error');
+      return;
+    }
+    window._groupActivityCache[groupId] = items || [];
+    setSyncStatus('ok');
+
+    // Re-renderiza a seção de palpites do grupo se a aba "matches" estiver aberta
+    const tab = window._groupDetailTab || 'matches';
+    if(tab === 'matches'){
+      const container = document.getElementById('group-activity-list');
+      if(container){
+        container.innerHTML = renderGroupActivityList(items || []);
+      }
+    }
+  });
+}
+
+function closeGroupDetailModal(){
+  if(window._groupActivityUnsub){
+    try{ window._groupActivityUnsub(); }catch(e){}
+    window._groupActivityUnsub = null;
+  }
+  closeModal();
 }
 
 function setGroupDetailTab(groupId, tab){
@@ -2796,8 +2840,8 @@ function renderGroupMatches(g){
     return new Date(m.date).toDateString() !== today;
   }).slice(0, 5);
 
-  // Últimos palpites do grupo (feed)
-  const feed = (g._activityFeed || state._localFeed?.[g.id] || []).slice(-5).reverse();
+  // Palpites do grupo (Firestore em tempo real)
+  const cached = (window._groupActivityCache && window._groupActivityCache[g.id]) || [];
 
   return `
     ${todayMatches.length > 0 ? `
@@ -2828,27 +2872,102 @@ function renderGroupMatches(g){
       </div>
     ` : ''}
 
-    <!-- Feed de atividade -->
-    ${feed.length > 0 ? `
-      <div class="mb-2">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-display tracking-wider text-base">FEED DO GRUPO</h3>
-          <span class="text-[10px] text-muted">últimos palpites</span>
+    <!-- Palpites do Grupo (tempo real) -->
+    <div class="mb-2">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-display tracking-wider text-base">PALPITES DO GRUPO</h3>
+        <span class="text-[10px] text-muted">atualiza em tempo real</span>
+      </div>
+      <div id="group-activity-list" class="space-y-3">
+        ${renderGroupActivityList(cached)}
+      </div>
+    </div>
+  `;
+}
+
+/* Renderiza a lista de palpites do grupo, agrupados por jogo.
+   Dentro de cada jogo, ordena por updatedAt DESC (mais recente em cima). */
+function renderGroupActivityList(items){
+  if(!items || items.length === 0){
+    return `
+      <div class="card p-5 text-center">
+        <div class="text-3xl mb-2">📡</div>
+        <div class="text-sm text-muted">Nenhum palpite no grupo ainda.</div>
+        <div class="text-[11px] text-muted mt-1">Seja o primeiro — registre acima 👆</div>
+      </div>
+    `;
+  }
+
+  // Agrupa por matchId
+  const byMatch = {};
+  items.forEach(it => {
+    if(!byMatch[it.matchId]) byMatch[it.matchId] = [];
+    byMatch[it.matchId].push(it);
+  });
+
+  // Ordena cada grupo: mais recente primeiro
+  Object.values(byMatch).forEach(arr => {
+    arr.sort((a,b) => {
+      const ta = a.updatedAt?.toMillis?.() || a.updatedAt?.seconds*1000 || 0;
+      const tb = b.updatedAt?.toMillis?.() || b.updatedAt?.seconds*1000 || 0;
+      return tb - ta;
+    });
+  });
+
+  // Ordena jogos: pelo updatedAt do palpite mais recente do jogo
+  const matchIds = Object.keys(byMatch).sort((a,b) => {
+    const ta = byMatch[a][0].updatedAt?.toMillis?.() || byMatch[a][0].updatedAt?.seconds*1000 || 0;
+    const tb = byMatch[b][0].updatedAt?.toMillis?.() || byMatch[b][0].updatedAt?.seconds*1000 || 0;
+    return tb - ta;
+  });
+
+  const me = myUid();
+
+  return matchIds.map(mid => {
+    const arr = byMatch[mid];
+    const first = arr[0];
+    const m = MATCHES.find(x=>x.id===mid);
+    const tA = m ? teamById(m.a) : null;
+    const tB = m ? teamById(m.b) : null;
+    const flagA = first.flagA || tA?.flag || '⚽';
+    const flagB = first.flagB || tB?.flag || '⚽';
+    const nameA = first.timeA || tA?.name || '';
+    const nameB = first.timeB || tB?.name || '';
+
+    return `
+      <div class="card p-3">
+        <!-- Cabeçalho do jogo -->
+        <div class="flex items-center gap-2 mb-2 pb-2 border-b border-white/5">
+          <span class="text-lg">${flagA}</span>
+          <span class="text-xs font-bold truncate">${nameA}</span>
+          <span class="text-muted text-xs">×</span>
+          <span class="text-xs font-bold truncate">${nameB}</span>
+          <span class="text-lg">${flagB}</span>
+          <span class="ml-auto text-[9px] text-muted tracking-widest">${first.stageLabel||''}</span>
         </div>
-        <div class="space-y-2">
-          ${feed.map(f => `
-            <div class="feed-item">
-              <div class="rank-avatar" style="width:32px;height:32px;font-size:14px">${f.avatar||'⚽'}</div>
-              <div class="flex-1 min-w-0">
-                <div class="text-xs"><span class="font-bold text-bone">${f.name}</span> palpitou <span class="font-bold text-neon">${f.a} x ${f.b}</span></div>
-                <div class="text-[10px] text-muted">${f.match} · ${timeAgo(f.ts)}</div>
+
+        <!-- Palpites dos membros -->
+        <div class="space-y-1.5">
+          ${arr.map(p => {
+            const isMe = p.userId === me;
+            const tsMs = p.updatedAt?.toMillis?.() || p.updatedAt?.seconds*1000 || Date.now();
+            return `
+              <div class="feed-item ${isMe?'is-me':''}" style="${isMe?'background:linear-gradient(90deg, rgba(0,255,163,.08), rgba(0,255,163,.02)); border-color:rgba(0,255,163,.25);':''}">
+                <div class="rank-avatar" style="width:32px;height:32px;font-size:14px">${p.userAvatar||'🙂'}</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-bold ${isMe?'text-neon':'text-bone'} truncate">${p.userName||'Membro'}${isMe?' (você)':''}</div>
+                  <div class="text-[10px] text-muted">${timeAgo(tsMs)}</div>
+                </div>
+                <div class="font-display text-xl ${isMe?'text-neon':'text-bone'}">
+                  ${p.placarA} <span class="text-muted text-sm">×</span> ${p.placarB}
+                </div>
               </div>
-            </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>
       </div>
-    ` : ''}
-  `;
+    `;
+  }).join('');
 }
 
 function renderInlineMatchCard(m){
@@ -2943,7 +3062,7 @@ function onInlineScoreChange(matchId){
 }
 
 /* Botão SALVAR PALPITE inline */
-function saveInlinePrediction(matchId){
+async function saveInlinePrediction(matchId){
   const aEl = document.querySelector(`[data-match="${matchId}"][data-side="a"]`);
   const bEl = document.querySelector(`[data-match="${matchId}"][data-side="b"]`);
   if(!aEl || !bEl){ toast('Erro ao salvar.','err'); return; }
@@ -2955,38 +3074,76 @@ function saveInlinePrediction(matchId){
   state.predictions[matchId] = prediction;
   saveState();
 
-  // Adiciona ao feed local do grupo ativo
+  // Status visual de sincronização
+  setSyncStatus('syncing');
+
   const g = state.groups.find(x=>x.id===state.selectedGroupId);
-  if(g){
-    state._localFeed = state._localFeed || {};
-    state._localFeed[g.id] = state._localFeed[g.id] || [];
-    const m = MATCHES.find(x=>x.id===matchId);
-    const tA = m ? teamById(m.a) : null;
-    const tB = m ? teamById(m.b) : null;
-    state._localFeed[g.id].push({
-      name: state.user.name + ' (você)',
-      avatar: state.user.avatar,
-      a, b,
-      match: tA && tB ? `${tA.flag} ${tA.name} × ${tB.name} ${tB.flag}` : '',
-      ts: Date.now()
-    });
-    // Limita a 20 itens
-    if(state._localFeed[g.id].length > 20){
-      state._localFeed[g.id] = state._localFeed[g.id].slice(-20);
+  const m = MATCHES.find(x=>x.id===matchId);
+  const tA = m ? teamById(m.a) : null;
+  const tB = m ? teamById(m.b) : null;
+
+  // Sincronização paralela: palpite pessoal + palpite no grupo
+  try{
+    const tasks = [];
+
+    if(window.CloudSync && window.CloudSync.publishPrediction){
+      tasks.push(window.CloudSync.publishPrediction(matchId, prediction));
     }
-    saveState();
+
+    if(g && window.CloudSync && window.CloudSync.publishGroupPrediction){
+      const matchMeta = {
+        timeA: tA?.name || '',
+        timeB: tB?.name || '',
+        flagA: tA?.flag || '',
+        flagB: tB?.flag || '',
+        matchDate: m?.date || null,
+        stageLabel: m ? matchStageLabel(m) : '',
+      };
+      tasks.push(window.CloudSync.publishGroupPrediction(g.id, matchId, prediction, matchMeta));
+    }
+
+    await Promise.all(tasks);
+    setSyncStatus('ok');
+    toast(`✅ Palpite salvo: <span class="font-display">${a} × ${b}</span>`,'ok');
+    confetti();
+  } catch(err){
+    console.error('Falha ao sincronizar palpite:', err);
+    setSyncStatus('error');
+    toast('⚠️ Erro ao salvar, tente novamente.','err');
   }
 
-  // Sincroniza com Firestore
-  if(window.CloudSync && window.CloudSync.publishPrediction){
-    window.CloudSync.publishPrediction(matchId, prediction);
-  }
-
-  toast(`✅ Palpite salvo: <span class="font-display">${a} × ${b}</span>`,'ok');
-  confetti();
-
-  // Re-renderiza o conteúdo da aba
+  // Re-renderiza o conteúdo da aba (mesmo em erro — palpite está em state)
   if(g) renderGroupDetailContent(g);
+}
+
+/* Atualiza o pill de status global de sync — funciona em qualquer tela */
+function setSyncStatus(state){
+  // states: 'syncing' | 'ok' | 'error' | 'idle'
+  window._syncStatus = state;
+  // Atualiza todos os elementos com data-sync-pill
+  document.querySelectorAll('[data-sync-pill]').forEach(el => {
+    el.innerHTML = renderSyncPill();
+  });
+}
+
+function renderSyncPill(){
+  const s = window._syncStatus || 'idle';
+  if(s === 'syncing'){
+    return `<span class="sync-pill" style="background:rgba(0,229,255,.1); border-color:rgba(0,229,255,.4); color:#00e5ff">
+      <span class="sync-dot" style="background:#00e5ff; box-shadow:0 0 8px #00e5ff"></span> ATUALIZANDO...
+    </span>`;
+  }
+  if(s === 'error'){
+    return `<span class="sync-pill" style="background:rgba(255,45,135,.1); border-color:rgba(255,45,135,.4); color:#ff2d87">
+      <span class="sync-dot" style="background:#ff2d87; box-shadow:0 0 8px #ff2d87; animation:none"></span> ERRO
+    </span>`;
+  }
+  // ok / idle (mesmo visual quando online)
+  const isOnline = window.CloudSync && window.CloudSync.isOnline && window.CloudSync.isOnline();
+  if(!isOnline){
+    return `<span class="text-[10px] text-muted">offline</span>`;
+  }
+  return `<span class="sync-pill"><span class="sync-dot"></span> SINCRONIZADO</span>`;
 }
 
 /* ===== SEÇÃO 2: RANKING PREMIUM ===== */
